@@ -168,6 +168,11 @@ const PROGRESS_BAR =
   '<span class="hljs-meta">... </span>    sleep(<span class="hljs-number">1</span>)\n' +
   'Processing: 100%|████████████████████| 3/3 [00:03&lt;00:00,  1.00s/it]\n';
 
+const AUDIO =
+  '<span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> pi, sin\n' +
+  'samples_f = (sin(i * <span class="hljs-number">2</span> * pi * <span class="hljs-number">440</span> / <span class="hljs-number">44100</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">100_000</span>))\n' +
+  'write_to_wav_file(<span class="hljs-string">\'test.wav\'</span>, samples_f)\n';
+
 const MARIO =
   '<span class="hljs-keyword">import</span> collections, dataclasses, enum, io, itertools <span class="hljs-keyword">as</span> it, pygame <span class="hljs-keyword">as</span> pg, urllib.request\n' +
   '<span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> randint\n' +
@@ -197,18 +202,19 @@ const MARIO =
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run</span><span class="hljs-params">(screen, images, mario, tiles)</span>:</span>\n' +
   '    clock = pg.time.Clock()\n' +
-  '    <span class="hljs-keyword">while</span> all(event.type != pg.QUIT <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> pg.event.get()):\n' +
+  '    pressed = set()\n' +
+  '    <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> pg.event.get(pg.QUIT) <span class="hljs-keyword">and</span> clock.tick(<span class="hljs-number">28</span>):\n' +
   '        keys = {pg.K_UP: D.n, pg.K_RIGHT: D.e, pg.K_DOWN: D.s, pg.K_LEFT: D.w}\n' +
-  '        pressed = {keys.get(ch) <span class="hljs-keyword">for</span> ch, is_prsd <span class="hljs-keyword">in</span> enumerate(pg.key.get_pressed()) <span class="hljs-keyword">if</span> is_prsd}\n' +
+  '        pressed |= {keys.get(e.key) <span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> pg.event.get(pg.KEYDOWN)}\n' +
+  '        pressed -= {keys.get(e.key) <span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> pg.event.get(pg.KEYUP)}\n' +
   '        update_speed(mario, tiles, pressed)\n' +
   '        update_position(mario, tiles)\n' +
   '        draw(screen, images, mario, tiles, pressed)\n' +
-  '        clock.tick(<span class="hljs-number">28</span>)\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_speed</span><span class="hljs-params">(mario, tiles, pressed)</span>:</span>\n' +
   '    x, y = mario.spd\n' +
   '    x += <span class="hljs-number">2</span> * ((D.e <span class="hljs-keyword">in</span> pressed) - (D.w <span class="hljs-keyword">in</span> pressed))\n' +
-  '    x -= (x &gt; <span class="hljs-number">0</span>) - (x &lt; <span class="hljs-number">0</span>)\n' +
+  '    x += (x &lt; <span class="hljs-number">0</span>) - (x &gt; <span class="hljs-number">0</span>)\n' +
   '    y += <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> D.s <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> get_boundaries(mario.rect, tiles) <span class="hljs-keyword">else</span> (D.n <span class="hljs-keyword">in</span> pressed) * <span class="hljs-number">-10</span>\n' +
   '    mario.spd = P(x=max(-MAX_S.x, min(MAX_S.x, x)), y=max(-MAX_S.y, min(MAX_S.y, y)))\n' +
   '\n' +
@@ -217,8 +223,7 @@ const MARIO =
   '    n_steps = max(abs(s) <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> mario.spd)\n' +
   '    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> range(n_steps):\n' +
   '        mario.spd = stop_on_collision(mario.spd, get_boundaries(mario.rect, tiles))\n' +
-  '        x, y = x + mario.spd.x / n_steps, y + mario.spd.y / n_steps\n' +
-  '        mario.rect.topleft = x, y\n' +
+  '        mario.rect.topleft = x, y = x + (mario.spd.x / n_steps), y + (mario.spd.y / n_steps)\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_boundaries</span><span class="hljs-params">(rect, tiles)</span>:</span>\n' +
   '    deltas = {D.n: P(<span class="hljs-number">0</span>, <span class="hljs-number">-1</span>), D.e: P(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>), D.s: P(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>), D.w: P(<span class="hljs-number">-1</span>, <span class="hljs-number">0</span>)}\n' +
@@ -367,13 +372,13 @@ const DIAGRAM_7_B =
   "      ├── AssertionError          <span class='hljs-comment'># Raised by `assert &lt;exp&gt;` if expression returns false value.</span>\n" +
   "      ├── AttributeError          <span class='hljs-comment'># Raised when an attribute is missing.</span>\n" +
   "      ├── EOFError                <span class='hljs-comment'># Raised by input() when it hits end-of-file condition.</span>\n" +
-  "      ├── LookupError             <span class='hljs-comment'># Raised when a look-up on a collection fails.</span>\n" +
+  "      ├── LookupError             <span class='hljs-comment'># Base class for errors when a collection can't find an item.</span>\n" +
   "      │    ├── IndexError         <span class='hljs-comment'># Raised when a sequence index is out of range.</span>\n" +
   "      │    └── KeyError           <span class='hljs-comment'># Raised when a dictionary key or set element is missing.</span>\n" +
   "      ├── MemoryError             <span class='hljs-comment'># Out of memory. Could be too late to start deleting vars.</span>\n" +
-  "      ├── NameError               <span class='hljs-comment'># Raised when an object is missing.</span>\n" +
-  "      ├── OSError                 <span class='hljs-comment'># Errors such as “file not found” or “disk full” (see Open).</span>\n" +
-  "      │    └── FileNotFoundError  <span class='hljs-comment'># When a file or directory is requested but doesn't exist.</span>\n" +
+  "      ├── NameError               <span class='hljs-comment'># Raised when nonexistent name (variable/func/class) is used.</span>\n" +
+  "      │    └── UnboundLocalError  <span class='hljs-comment'># Raised when local name is used before it's being defined.</span>\n" +
+  "      ├── OSError                 <span class='hljs-comment'># Errors such as FileExistsError/PermissionError (see Open).</span>\n" +
   "      ├── RuntimeError            <span class='hljs-comment'># Raised by errors that don't fall into other categories.</span>\n" +
   "      │    └── RecursionError     <span class='hljs-comment'># Raised when the maximum recursion depth is exceeded.</span>\n" +
   "      ├── StopIteration           <span class='hljs-comment'># Raised by next() when run on an empty iterator.</span>\n" +
@@ -433,17 +438,17 @@ const DIAGRAM_10_A =
   '+-------------+-------------+\n' +
   '|   Classes   | Metaclasses |\n' +
   '+-------------+-------------|\n' +
-  '|   MyClass --> MyMetaClass |\n';
+  '|   MyClass <-- MyMetaClass |\n';
 
 const DIAGRAM_10_B =
   '┏━━━━━━━━━━━━━┯━━━━━━━━━━━━━┓\n' +
   '┃   Classes   │ Metaclasses ┃\n' +
   '┠─────────────┼─────────────┨\n' +
-  '┃   MyClass ──→ MyMetaClass ┃\n' +
-  '┃             │     ↓       ┃\n' +
-  '┃    object ─────→ type ←╮  ┃\n' +
-  '┃             │     ↑ ╰──╯  ┃\n' +
-  '┃     str ──────────╯       ┃\n' +
+  '┃   MyClass ←──╴MyMetaClass ┃\n' +
+  '┃             │     ↑       ┃\n' +
+  '┃    object ←─────╴type ←╮  ┃\n' +
+  '┃             │     │ ╰──╯  ┃\n' +
+  '┃     str ←─────────╯       ┃\n' +
   '┗━━━━━━━━━━━━━┷━━━━━━━━━━━━━┛\n';
 
 const DIAGRAM_11_A =
@@ -457,9 +462,9 @@ const DIAGRAM_11_B =
   '┃   Classes   │ Metaclasses ┃\n' +
   '┠─────────────┼─────────────┨\n' +
   '┃   MyClass   │ MyMetaClass ┃\n' +
-  '┃      ↓      │     ↓       ┃\n' +
-  '┃    object ←───── type     ┃\n' +
-  '┃      ↑      │             ┃\n' +
+  '┃      ↑      │     ↑       ┃\n' +
+  '┃    object╶─────→ type     ┃\n' +
+  '┃      ↓      │             ┃\n' +
   '┃     str     │             ┃\n' +
   '┗━━━━━━━━━━━━━┷━━━━━━━━━━━━━┛\n';
 
@@ -506,12 +511,12 @@ const DIAGRAM_15_B =
   "┏━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +
   "┃                        │    'outer'    │   'inner'  │   'left'   │       Description        ┃\n" +
   "┠────────────────────────┼───────────────┼────────────┼────────────┼──────────────────────────┨\n" +
-  "┃ l.merge(r, on='y',     │    x   y   z  │ x   y   z  │ x   y   z  │ Joins/merges on column.  ┃\n" +
-  "┃            how=…)      │ 0  1   2   .  │ 3   4   5  │ 1   2   .  │ Also accepts left_on and ┃\n" +
-  "┃                        │ 1  3   4   5  │            │ 3   4   5  │ right_on parameters.     ┃\n" +
+  "┃ l.merge(r, on='y',     │    x   y   z  │ x   y   z  │ x   y   z  │ Merges on column if 'on' ┃\n" +
+  "┃            how=…)      │ 0  1   2   .  │ 3   4   5  │ 1   2   .  │ or 'left/right_on' are   ┃\n" +
+  "┃                        │ 1  3   4   5  │            │ 3   4   5  │ set, else on shared cols.┃\n" +
   "┃                        │ 2  .   6   7  │            │            │ Uses 'inner' by default. ┃\n" +
   "┠────────────────────────┼───────────────┼────────────┼────────────┼──────────────────────────┨\n" +
-  "┃ l.join(r, lsuffix='l', │    x yl yr  z │            │ x yl yr  z │ Joins/merges on row keys.┃\n" +
+  "┃ l.join(r, lsuffix='l', │    x yl yr  z │            │ x yl yr  z │ Merges on row keys.      ┃\n" +
   "┃           rsuffix='r', │ a  1  2  .  . │ x yl yr  z │ 1  2  .  . │ Uses 'left' by default.  ┃\n" +
   "┃           how=…)       │ b  3  4  4  5 │ 3  4  4  5 │ 3  4  4  5 │ If r is a Series, it is  ┃\n" +
   "┃                        │ c  .  .  6  7 │            │            │ treated as a column.     ┃\n" +
@@ -519,8 +524,8 @@ const DIAGRAM_15_B =
   "┃ pd.concat([l, r],      │    x   y   z  │     y      │            │ Adds rows at the bottom. ┃\n" +
   "┃           axis=0,      │ a  1   2   .  │     2      │            │ Uses 'outer' by default. ┃\n" +
   "┃           join=…)      │ b  3   4   .  │     4      │            │ A Series is treated as a ┃\n" +
-  "┃                        │ b  .   4   5  │     4      │            │ column. Use l.append(sr) ┃\n" +
-  "┃                        │ c  .   6   7  │     6      │            │ to add a row instead.    ┃\n" +
+  "┃                        │ b  .   4   5  │     4      │            │ column. To add a row use ┃\n" +
+  "┃                        │ c  .   6   7  │     6      │            │ pd.concat([l, DF([sr])]).┃\n" +
   "┠────────────────────────┼───────────────┼────────────┼────────────┼──────────────────────────┨\n" +
   "┃ pd.concat([l, r],      │    x  y  y  z │            │            │ Adds columns at the      ┃\n" +
   "┃           axis=1,      │ a  1  2  .  . │ x  y  y  z │            │ right end. Uses 'outer'  ┃\n" +
@@ -742,6 +747,7 @@ function fixHighlights() {
   $(`code:contains(ValueError: malformed node)`).html(EVAL);
   $(`code:contains(import asyncio, collections, curses, curses.textpad, enum, random)`).html(COROUTINES);
   $(`code:contains(pip3 install tqdm)`).html(PROGRESS_BAR);
+  $(`code:contains(samples_f = (sin(i *)`).html(AUDIO);
   $(`code:contains(collections, dataclasses, enum, io, itertools)`).html(MARIO);
   $(`code:contains(pip3 install pyinstaller)`).html(PYINSTALLER);
   $(`ul:contains(Only available in)`).html(INDEX);
@@ -792,6 +798,9 @@ function fixPandasDiagram() {
   $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(and)").after("and");
   $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(as)").after("as");
   $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(is)").after("is");
+  $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(if)").after("if");
+  $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(or)").after("or");
+  $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(else)").after("else");
   $(`code:contains(${diagram_15})`).find(".hljs-keyword").remove();
 }
 

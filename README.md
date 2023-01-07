@@ -313,7 +313,7 @@ String
 ```
 
 ```python
-<bool> = <sub_str> in <str>                  # Checks if string contains a substring.
+<bool> = <sub_str> in <str>                  # Checks if string contains the substring.
 <bool> = <str>.startswith(<sub_str>)         # Pass tuple of strings for multiple options.
 <bool> = <str>.endswith(<sub_str>)           # Pass tuple of strings for multiple options.
 <int>  = <str>.find(<sub_str>)               # Returns start index of the first match or -1.
@@ -344,7 +344,7 @@ String
 | isdecimal()   |          |          |          |          |   yes    |
 +---------------+----------+----------+----------+----------+----------+
 ```
-* **Also: `'isspace()'` checks for `'[ \t\n\r\f\v\x1c-\x1f\x85\u2000…]'`.**
+* **`'isspace()'` checks for whitespaces: `'[ \t\n\r\f\v\x1c-\x1f\x85\xa0\u1680…]'`.**
 
 
 Regex
@@ -363,7 +363,7 @@ import re
 * **Search() and match() return None if they can't find a match.**
 * **Argument `'flags=re.IGNORECASE'` can be used with all functions.**
 * **Argument `'flags=re.MULTILINE'` makes `'^'` and `'$'` match the start/end of each line.**
-* **Argument `'flags=re.DOTALL'` makes dot also accept the `'\n'`.**
+* **Argument `'flags=re.DOTALL'` makes `'.'` also accept the `'\n'`.**
 * **Use `r'\1'` or `'\\1'` for backreference (`'\1'` returns a character with octal code 1).**
 * **Add `'?'` after `'*'` and `'+'` to make them non-greedy.**
 
@@ -518,7 +518,7 @@ from statistics import mean, median, variance     # Also: stdev, quantiles, grou
 
 ### Random
 ```python
-from random import random, randint, choice        # Also shuffle, gauss, triangular, seed.
+from random import random, randint, choice        # Also: shuffle, gauss, triangular, seed.
 <float> = random()                                # A float inside [0, 1).
 <int>   = randint(from_inc, to_inc)               # An int inside [from_inc, to_inc].
 <el>    = choice(<sequence>)                      # Keeps the sequence intact.
@@ -606,6 +606,7 @@ from dateutil.tz import UTC, tzlocal, gettz, datetime_exists, resolve_imaginary
 * **Use `'<D/DT>.weekday()'` to get the day of the week as an int, with Monday being 0.**
 * **`'fold=1'` means the second pass in case of time jumping back for one hour.**
 * **Timedelta normalizes arguments to ±days, seconds (< 86 400) and microseconds (< 1M).**
+* **`'<DTa> = resolve_imaginary(<DTa>)'` fixes DTs that fall into the missing hour.**
 
 ### Now
 ```python
@@ -679,7 +680,7 @@ def func(<default_args>): ...                     # def func(x=0, y=0): ...
 def func(<nondefault_args>, <default_args>): ...  # def func(x, y=0): ...
 ```
 * **Default values are evaluated when function is first encountered in the scope.**
-* **Any mutation of a mutable default value will persist between invocations.**
+* **Any mutation of a mutable default value will persist between invocations!**
 
 
 Splat Operator
@@ -777,7 +778,7 @@ Inline
 
 ### Any, All
 ```python
-<bool> = any(<collection>)                          # Is `bool(el)` True for any element.
+<bool> = any(<collection>)                          # Is `bool(<el>)` True for any element.
 <bool> = all(<collection>)                          # Is True for all elements or empty.
 ```
 
@@ -787,7 +788,7 @@ Inline
 ```
 
 ```python
->>> [a if a else 'zero' for a in (0, 1, 2, 3)]
+>>> [a if a else 'zero' for a in (0, 1, 2, 3)]      # `any([0, '', [], None]) == False`
 ['zero', 1, 2, 3]
 ```
 
@@ -800,8 +801,8 @@ point = Point(0, 0)                                 # Returns its instance.
 
 ```python
 from enum import Enum
-Direction = Enum('Direction', 'n e s w')            # Creates an enum.
-direction = Direction.n                             # Returns its member.
+Direction = Enum('Direction', 'N E S W')            # Creates an enum.
+direction = Direction.N                             # Returns its member.
 ```
 
 ```python
@@ -852,8 +853,9 @@ from functools import partial
 ```
 
 ```python
->>> import operator as op
->>> multiply_by_3 = partial(op.mul, 3)
+>>> def multiply(a, b):
+...     return a * b
+>>> multiply_by_3 = partial(multiply, 3)
 >>> multiply_by_3(10)
 30
 ```
@@ -966,7 +968,7 @@ class <name>:
 * **If only repr() is defined, it will also be used for str().**
 * **Methods decorated with `'@staticmethod'` do not receive 'self' nor 'cls' as their first arg.**
 
-#### Str() use cases:
+#### Expressions that call the str() method:
 ```python
 print(<el>)
 f'{<el>}'
@@ -975,7 +977,7 @@ csv.writer(<file>).writerow([<el>])
 raise Exception(<el>)
 ```
 
-#### Repr() use cases:
+#### Expressions that call the repr() method:
 ```python
 print/str/repr([<el>])
 f'{<el>!r}'
@@ -1260,7 +1262,7 @@ class MyCollection:
 * **Only required methods are len() and getitem().**
 * **Getitem() should return an item at the passed index or raise IndexError.**
 * **Iter() and contains() automatically work on any object that has getitem() defined.**
-* **Reversed() automatically works on any object that has len() and getitem() defined.**
+* **Reversed() automatically works on any object that has getitem() and len() defined.**
 ```python
 class MySequence:
     def __init__(self, a):
@@ -1329,6 +1331,7 @@ class <enum_name>(Enum):
 ```
 * **If there are no numeric values before auto(), it returns 1.**
 * **Otherwise it returns an increment of the last numeric value.**
+* **Accessing a member named after a reserved keyword causes SyntaxError.**
 
 ```python
 <member> = <enum>.<member_name>                 # Returns a member.
@@ -1354,9 +1357,9 @@ def get_next_member(member):
 
 ### Inline
 ```python
-Cutlery = Enum('Cutlery', 'fork knife spoon')
-Cutlery = Enum('Cutlery', ['fork', 'knife', 'spoon'])
-Cutlery = Enum('Cutlery', {'fork': 1, 'knife': 2, 'spoon': 3})
+Cutlery = Enum('Cutlery', 'FORK KNIFE SPOON')
+Cutlery = Enum('Cutlery', ['FORK', 'KNIFE', 'SPOON'])
+Cutlery = Enum('Cutlery', {'FORK': 1, 'KNIFE': 2, 'SPOON': 3})
 ```
 
 #### User-defined functions cannot be values, so they must be wrapped:
@@ -1365,7 +1368,6 @@ from functools import partial
 LogicOp = Enum('LogicOp', {'AND': partial(lambda l, r: l and r),
                            'OR':  partial(lambda l, r: l or r)})
 ```
-* **Member names are in all caps because trying to access a member that is named after a reserved keyword raises SyntaxError.**
 
 
 Exceptions
@@ -1392,6 +1394,8 @@ finally:
 ```
 * **Code inside the `'else'` block will only be executed if `'try'` block had no exceptions.**
 * **Code inside the `'finally'` block will always be executed (unless a signal is received).**
+* **All variables that are initialized in executed blocks are also visible in all subsequent blocks, as well as outside the try/except clause (only function blocks delimit scope).**
+* **To catch signals use `'signal.signal(signal_number, <func>)'`.**
 
 ### Catching Exceptions
 ```python
@@ -1403,7 +1407,7 @@ except (<exception>, [...]) as <name>: ...
 * **Also catches subclasses of the exception.**
 * **Use `'traceback.print_exc()'` to print the error message to stderr.**
 * **Use `'print(<name>)'` to print just the cause of the exception (its arguments).**
-* **Use `'logging.exception(<message>)'` to log the exception.**
+* **Use `'logging.exception(<message>)'` to log the passed message, followed by the full error message of the caught exception.**
 
 ### Raising Exceptions
 ```python
@@ -1414,7 +1418,7 @@ raise <exception>(<el> [, ...])
 
 #### Re-raising caught exception:
 ```python
-except <exception> as <name>:
+except <exception> [as <name>]:
     ...
     raise
 ```
@@ -1426,7 +1430,7 @@ exc_type  = <name>.__class__
 filename  = <name>.__traceback__.tb_frame.f_code.co_filename
 func_name = <name>.__traceback__.tb_frame.f_code.co_name
 line      = linecache.getline(filename, <name>.__traceback__.tb_lineno)
-traceback = ''.join(traceback.format_tb(<name>.__traceback__))
+trace_str = ''.join(traceback.format_tb(<name>.__traceback__))
 error_msg = ''.join(traceback.format_exception(exc_type, <name>, <name>.__traceback__))
 ```
 
@@ -1441,13 +1445,13 @@ BaseException
       +-- AssertionError          # Raised by `assert <exp>` if expression returns false value.
       +-- AttributeError          # Raised when an attribute is missing.
       +-- EOFError                # Raised by input() when it hits end-of-file condition.
-      +-- LookupError             # Raised when a look-up on a collection fails.
+      +-- LookupError             # Base class for errors when a collection can't find an item.
       |    +-- IndexError         # Raised when a sequence index is out of range.
       |    +-- KeyError           # Raised when a dictionary key or set element is missing.
       +-- MemoryError             # Out of memory. Could be too late to start deleting vars.
-      +-- NameError               # Raised when an object is missing.
-      +-- OSError                 # Errors such as “file not found” or “disk full” (see Open).
-      |    +-- FileNotFoundError  # When a file or directory is requested but doesn't exist.
+      +-- NameError               # Raised when nonexistent name (variable/func/class) is used.
+      |    +-- UnboundLocalError  # Raised when local name is used before it's being defined.
+      +-- OSError                 # Errors such as FileExistsError/PermissionError (see Open).
       +-- RuntimeError            # Raised by errors that don't fall into other categories.
       |    +-- RecursionError     # Raised when the maximum recursion depth is exceeded.
       +-- StopIteration           # Raised by next() when run on an empty iterator.
@@ -1632,7 +1636,7 @@ from glob import glob
 ```
 
 ```python
-<list> = listdir(path='.')          # Returns filenames located at path.
+<list> = listdir(path='.')          # Returns filenames located at the path.
 <list> = glob('<pattern>')          # Returns paths matching the wildcard pattern.
 ```
 
@@ -1644,15 +1648,15 @@ from glob import glob
 
 ```python
 <stat> = os.stat(<path>)            # Or: <DirEntry/Path>.stat()
-<real> = <stat>.st_mtime/st_size/…  # Modification time, size in bytes, …
+<real> = <stat>.st_mtime/st_size/…  # Modification time, size in bytes, ...
 ```
 
 ### DirEntry
 **Unlike listdir(), scandir() returns DirEntry objects that cache isfile, isdir and on Windows also stat information, thus significantly increasing the performance of code that requires it.**
 
 ```python
-<iter> = scandir(path='.')          # Returns DirEntry objects located at path.
-<str>  = <DirEntry>.path            # Returns whole path as a string.
+<iter> = scandir(path='.')          # Returns DirEntry objects located at the path.
+<str>  = <DirEntry>.path            # Returns the whole path as a string.
 <str>  = <DirEntry>.name            # Returns final component as a string.
 <file> = open(<DirEntry>)           # Opens the file and returns a file object.
 ```
@@ -1814,6 +1818,7 @@ import csv
 * **File must be opened with a `'newline=""'` argument, or newlines embedded inside quoted fields will not be interpreted correctly!**
 * **To print the spreadsheet to the console use [Tabulate](#table) library.**
 * **For XML and binary Excel files (xlsx, xlsm and xlsb) use [Pandas](#dataframe-plot-encode-decode) library.**
+* **Reader accepts any iterator of strings, not just files.**
 
 ### Write
 ```python
@@ -1918,7 +1923,7 @@ with <conn>:                                    # Exits the block with commit() 
 ```python
 # $ pip3 install sqlalchemy
 from sqlalchemy import create_engine, text
-<engine> = create_engine('<url>').connect()     # Url: 'dialect://user:password@host/dbname'.
+<engine> = create_engine('<url>')               # Url: 'dialect://user:password@host/dbname'.
 <conn>   = <engine>.connect()                   # Creates a connection. Also <conn>.close().
 <cursor> = <conn>.execute(text('<query>'), …)   # Replaces ':<key>'s with keyword arguments.
 with <conn>.begin(): ...                        # Exits the block with commit or rollback.
@@ -2087,7 +2092,7 @@ Threading
 * **That is why using multiple threads won't result in a faster execution, unless at least one of the threads contains an I/O operation.**
 ```python
 from threading import Thread, RLock, Semaphore, Event, Barrier
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 ```
 
 ### Thread
@@ -2134,6 +2139,7 @@ with <lock>:                                   # Enters the block by calling acq
 <Futr> = <Exec>.submit(<func>, <arg_1>, ...)   # Starts a thread and returns its Future object.
 <bool> = <Futr>.done()                         # Checks if the thread has finished executing.
 <obj>  = <Futr>.result()                       # Waits for thread to finish and returns result.
+<iter> = as_completed(<coll_of_Futr>)          # Each Future is yielded as it completes.
 ```
 
 ### Queue
@@ -2156,10 +2162,10 @@ Operator
 **Module of functions that provide the functionality of operators.**
 ```python
 import operator as op
-<el>      = op.add/sub/mul/truediv/floordiv/mod(<el>, <el>)  # +, -, *, /, //, %
-<int/set> = op.and_/or_/xor(<int/set>, <int/set>)            # &, |, ^
-<bool>    = op.eq/ne/lt/le/gt/ge(<sortable>, <sortable>)     # ==, !=, <, <=, >, >=
-<func>    = op.itemgetter/attrgetter/methodcaller(<obj>)     # [index/key], .name, .name()
+<obj>     = op.add/sub/mul/truediv/floordiv/mod(<obj>, <obj>)     # +, -, *, /, //, %
+<int/set> = op.and_/or_/xor(<int/set>, <int/set>)                 # &, |, ^
+<bool>    = op.eq/ne/lt/le/gt/ge(<sortable>, <sortable>)          # ==, !=, <, <=, >, >=
+<func>    = op.itemgetter/attrgetter/methodcaller(<obj> [, ...])  # [index/key], .name, .name()
 ```
 
 ```python
@@ -2200,8 +2206,8 @@ delattr(<object>, '<attr_name>')           # Same. Also `del <object>.<attr_name
 <Sig>  = inspect.signature(<function>)     # Function's Signature object.
 <dict> = <Sig>.parameters                  # Dict of Parameter objects.
 <memb> = <Param>.kind                      # Member of ParameterKind enum.
-<obj>  = <Param>.default                   # Default value or <Param>.empty.
-<type> = <Param>.annotation                # Type or <Param>.empty.
+<obj>  = <Param>.default                   # Default value or Parameter.empty.
+<type> = <Param>.annotation                # Type or Parameter.empty.
 ```
 
 
@@ -2265,11 +2271,11 @@ type(MyMetaClass) == type            # MyMetaClass is an instance of type.
 +-------------+-------------+
 |   Classes   | Metaclasses |
 +-------------+-------------|
-|   MyClass --> MyMetaClass |
-|             |     v       |
-|    object -----> type <+  |
-|             |     ^ +--+  |
-|     str ----------+       |
+|   MyClass <-- MyMetaClass |
+|             |     ^       |
+|    object <----- type <+  |
+|             |     | +--+  |
+|     str <---------+       |
 +-------------+-------------+
 ```
 
@@ -2284,9 +2290,9 @@ MyMetaClass.__base__ == type         # MyMetaClass is a subclass of type.
 |   Classes   | Metaclasses |
 +-------------+-------------|
 |   MyClass   | MyMetaClass |
-|      v      |     v       |
-|    object <----- type     |
-|      ^      |             |
+|      ^      |     ^       |
+|    object -----> type     |
+|      v      |             |
 |     str     |             |
 +-------------+-------------+
 ```
@@ -2512,6 +2518,7 @@ except requests.exceptions.ConnectionError:
 
 Web
 ---
+**Bottle is a micro web framework/server. If you just want to open a html file in a web browser use `'webbrowser.open(<path>)'` instead.**
 ```python
 # $ pip3 install bottle
 from bottle import run, route, static_file, template, post, request, response
@@ -2597,9 +2604,7 @@ Line #   Hits     Time  Per Hit   % Time  Line Contents
      2                                    def main():
      3      1    955.0    955.0     43.7      a = [*range(10000)]
      4      1   1231.0   1231.0     56.3      b = {*range(10000)}
-```
 
-```text
 $ python3 -m memory_profiler test.py
 Line #         Mem usage      Increment   Line Contents
 =======================================================
@@ -2620,6 +2625,7 @@ drawer = cg.output.GraphvizOutput(output_file=filename)
 with cg.PyCallGraph(drawer):
     <code_to_be_profiled>
 ```
+* **The "latest and greatest" profiler that can also monitor GPU usage is called [Scalene](https://github.com/plasma-umass/scalene).**
 
 
 NumPy
@@ -2645,8 +2651,8 @@ import numpy as np
 ```
 
 ```python
-<array> = <array>.sum/min/mean/var/std(axis)            # Passed dimension gets aggregated.
-<array> = <array>.argmin(axis)                          # Returns indexes of smallest elements.
+<array> = <array>.sum/min/mean/var/std([axis])          # Passed dimension gets aggregated.
+<array> = <array>.argmin([axis])                        # Returns indexes of smallest elements.
 <array> = np.apply_along_axis(<func>, axis, <array>)    # Func can return a scalar or array.
 ```
 
@@ -2668,8 +2674,8 @@ import numpy as np
 ```
 
 ```bash
-<2d_bools> = <2d_array> ><== <el>                       # <3d_array> ><== <1d_array>
-<1d_array> = <2d_array>[<2d_bools>]                     # <3d_array>[<2d_bools>]
+<2d_bools> = <2d_array> ><== <el/1d/2d_array>           # 1d_array must have size of a row.
+<1d/2d_a>  = <2d_array>[<2d/1d_bools>]                  # 1d_bools must have size of a column.
 ```
 * **All examples also allow assignments.**
 
@@ -2900,7 +2906,7 @@ def write_to_wav_file(filename, float_samples, nchannels=1, sampwidth=2, framera
 #### Saves a 440 Hz sine wave to a mono WAV file:
 ```python
 from math import pi, sin
-samples_f = (sin(i * 2 * pi * 440 / 44100) for i in range(100000))
+samples_f = (sin(i * 2 * pi * 440 / 44100) for i in range(100_000))
 write_to_wav_file('test.wav', samples_f)
 ```
 
@@ -2963,10 +2969,10 @@ import pygame as pg
 pg.init()
 screen = pg.display.set_mode((500, 500))
 rect = pg.Rect(240, 240, 20, 20)
-while all(event.type != pg.QUIT for event in pg.event.get()):
-    deltas = {pg.K_UP: (0, -1), pg.K_RIGHT: (1, 0), pg.K_DOWN: (0, 1), pg.K_LEFT: (-1, 0)}
-    for ch, is_pressed in enumerate(pg.key.get_pressed()):
-        rect = rect.move(deltas[ch]) if ch in deltas and is_pressed else rect
+while not pg.event.get(pg.QUIT):
+    deltas = {pg.K_UP: (0, -20), pg.K_RIGHT: (20, 0), pg.K_DOWN: (0, 20), pg.K_LEFT: (-20, 0)}
+    for event in pg.event.get(pg.KEYDOWN):
+        rect.move_ip(deltas.get(event.key, (0, 0)))
     screen.fill((0, 0, 0))
     pg.draw.rect(screen, (255, 255, 255), rect)
     pg.display.flip()
@@ -2982,7 +2988,7 @@ while all(event.type != pg.QUIT for event in pg.event.get()):
 ```
 
 ```python
-<bool> = <Rect>.collidepoint((x, y))            # Checks if rectangle contains a point.
+<bool> = <Rect>.collidepoint((x, y))            # Checks if rectangle contains the point.
 <bool> = <Rect>.colliderect(<Rect>)             # Checks if two rectangles overlap.
 <int>  = <Rect>.collidelist(<list_of_Rect>)     # Returns index of first colliding Rect or -1.
 <list> = <Rect>.collidelistall(<list_of_Rect>)  # Returns indexes of all colliding rectangles.
@@ -3060,18 +3066,19 @@ def main():
 
 def run(screen, images, mario, tiles):
     clock = pg.time.Clock()
-    while all(event.type != pg.QUIT for event in pg.event.get()):
+    pressed = set()
+    while not pg.event.get(pg.QUIT) and clock.tick(28):
         keys = {pg.K_UP: D.n, pg.K_RIGHT: D.e, pg.K_DOWN: D.s, pg.K_LEFT: D.w}
-        pressed = {keys.get(ch) for ch, is_prsd in enumerate(pg.key.get_pressed()) if is_prsd}
+        pressed |= {keys.get(e.key) for e in pg.event.get(pg.KEYDOWN)}
+        pressed -= {keys.get(e.key) for e in pg.event.get(pg.KEYUP)}
         update_speed(mario, tiles, pressed)
         update_position(mario, tiles)
         draw(screen, images, mario, tiles, pressed)
-        clock.tick(28)
 
 def update_speed(mario, tiles, pressed):
     x, y = mario.spd
     x += 2 * ((D.e in pressed) - (D.w in pressed))
-    x -= (x > 0) - (x < 0)
+    x += (x < 0) - (x > 0)
     y += 1 if D.s not in get_boundaries(mario.rect, tiles) else (D.n in pressed) * -10
     mario.spd = P(x=max(-MAX_S.x, min(MAX_S.x, x)), y=max(-MAX_S.y, min(MAX_S.y, y)))
 
@@ -3080,8 +3087,7 @@ def update_position(mario, tiles):
     n_steps = max(abs(s) for s in mario.spd)
     for _ in range(n_steps):
         mario.spd = stop_on_collision(mario.spd, get_boundaries(mario.rect, tiles))
-        x, y = x + mario.spd.x / n_steps, y + mario.spd.y / n_steps
-        mario.rect.topleft = x, y
+        mario.rect.topleft = x, y = x + (mario.spd.x / n_steps), y + (mario.spd.y / n_steps)
 
 def get_boundaries(rect, tiles):
     deltas = {D.n: P(0, -1), D.e: P(1, 0), D.s: P(0, 1), D.w: P(-1, 0)}
@@ -3151,7 +3157,7 @@ Name: a, dtype: int64
 ```
 
 ```python
-<Sr> = <Sr>.append(<Sr>)                       # Or: pd.concat(<coll_of_Sr>)
+<Sr> = pd.concat(<coll_of_Sr>)                 # Concats multiple Series into one long Series.
 <Sr> = <Sr>.combine_first(<Sr>)                # Adds items that are not yet present.
 <Sr>.update(<Sr>)                              # Updates items that are already present.
 ```
@@ -3192,6 +3198,7 @@ y    2
 | sr.transform(…) |     y  2    |   y     2   |       y  2    |
 +-----------------+-------------+-------------+---------------+
 ```
+* **Methods ffill(), interpolate() and fillna() accept argument 'inplace' that defaults to False.**
 * **Last result has a hierarchical index. Use `'<Sr>[key_1, key_2]'` to get its values.**
 
 ### DataFrame
@@ -3229,9 +3236,9 @@ b  3  4
 
 ```python
 <DF>    = <DF>.set_index(column_key)           # Replaces row keys with values from a column.
-<DF>    = <DF>.reset_index()                   # Moves row keys to a column named index.
-<DF>    = <DF>.sort_index(ascending=True)      # Sorts rows by row keys.
-<DF>    = <DF>.sort_values(column_key/s)       # Sorts rows by the passed column/s.
+<DF>    = <DF>.reset_index(drop=False)         # Moves row keys to a column named index.
+<DF>    = <DF>.sort_index(ascending=True)      # Sorts rows by row keys. Use `axis=1` for cols.
+<DF>    = <DF>.sort_values(column_key/s)       # Sorts rows by the passed column/s. Same.
 ```
 
 #### DataFrame — Merge, Join, Concat:
@@ -3250,12 +3257,12 @@ c  6  7
 +------------------------+---------------+------------+------------+--------------------------+
 |                        |    'outer'    |   'inner'  |   'left'   |       Description        |
 +------------------------+---------------+------------+------------+--------------------------+
-| l.merge(r, on='y',     |    x   y   z  | x   y   z  | x   y   z  | Joins/merges on column.  |
-|            how=…)      | 0  1   2   .  | 3   4   5  | 1   2   .  | Also accepts left_on and |
-|                        | 1  3   4   5  |            | 3   4   5  | right_on parameters.     |
+| l.merge(r, on='y',     |    x   y   z  | x   y   z  | x   y   z  | Merges on column if 'on' |
+|            how=…)      | 0  1   2   .  | 3   4   5  | 1   2   .  | or 'left/right_on' are   |
+|                        | 1  3   4   5  |            | 3   4   5  | set, else on shared cols.|
 |                        | 2  .   6   7  |            |            | Uses 'inner' by default. |
 +------------------------+---------------+------------+------------+--------------------------+
-| l.join(r, lsuffix='l', |    x yl yr  z |            | x yl yr  z | Joins/merges on row keys.|
+| l.join(r, lsuffix='l', |    x yl yr  z |            | x yl yr  z | Merges on row keys.      |
 |           rsuffix='r', | a  1  2  .  . | x yl yr  z | 1  2  .  . | Uses 'left' by default.  |
 |           how=…)       | b  3  4  4  5 | 3  4  4  5 | 3  4  4  5 | If r is a Series, it is  |
 |                        | c  .  .  6  7 |            |            | treated as a column.     |
@@ -3263,8 +3270,8 @@ c  6  7
 | pd.concat([l, r],      |    x   y   z  |     y      |            | Adds rows at the bottom. |
 |           axis=0,      | a  1   2   .  |     2      |            | Uses 'outer' by default. |
 |           join=…)      | b  3   4   .  |     4      |            | A Series is treated as a |
-|                        | b  .   4   5  |     4      |            | column. Use l.append(sr) |
-|                        | c  .   6   7  |     6      |            | to add a row instead.    |
+|                        | b  .   4   5  |     4      |            | column. To add a row use |
+|                        | c  .   6   7  |     6      |            | pd.concat([l, DF([sr])]).|
 +------------------------+---------------+------------+------------+--------------------------+
 | pd.concat([l, r],      |    x  y  y  z |            |            | Adds columns at the      |
 |           axis=1,      | a  1  2  .  . | x  y  y  z |            | right end. Uses 'outer'  |
@@ -3317,7 +3324,7 @@ b  3  4
 
 #### DataFrame — Plot, Encode, Decode:
 ```python
-<DF>.plot.line/bar/hist/scatter/box()          # Also: `x=column_key, y=column_key/s`.
+<DF>.plot.line/area/bar/hist/scatter/box()     # Also: `x=column_key, y=column_key/s`.
 plt.show()                                     # Displays the plot. Also plt.savefig(<path>).
 ```
 
@@ -3404,7 +3411,7 @@ from plotly.express import line
 <Figure>.write_html/json/image('<path>')                 # Also: <Figure>.show()
 ```
 
-#### Covid deaths by continent:
+#### Displays a line chart of total coronavirus deaths per million grouped by continent:
 
 ![Covid Deaths](web/covid_deaths.png)
 <div id="2a950764-39fc-416d-97fe-0a6226a3095f" class="plotly-graph-div" style="height:340px; width:100%;"></div>
@@ -3423,7 +3430,7 @@ df = df.rename({'date': 'Date', 'Continent_Name': 'Continent'}, axis='columns')
 line(df, x='Date', y='Total Deaths per Million', color='Continent').show()
 ```
 
-#### Confirmed covid cases, Dow Jones, Gold, and Bitcoin price:
+#### Displays a multi-axis line chart of total coronavirus cases and changes in prices of Bitcoin, Dow Jones and gold:
 
 ![Covid Cases](web/covid_cases.png)
 <div id="e23ccacc-a456-478b-b467-7282a2165921" class="plotly-graph-div" style="height:315px; width:100%;"></div>
@@ -3479,6 +3486,7 @@ PySimpleGUI
 ```python
 # $ pip3 install PySimpleGUI
 import PySimpleGUI as sg
+
 layout = [[sg.Text("What's your name?")], [sg.Input()], [sg.Button('Ok')]]
 window = sg.Window('Window Title', layout)
 event, values = window.read()
