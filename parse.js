@@ -70,6 +70,7 @@ const PARAMETRIZED_DECORATOR =
 
 const REPR_USE_CASES =
   'print/str/repr([&lt;el&gt;])\n' +
+  'print/str/repr({&lt;el&gt;: &lt;el&gt;})\n' +
   '<span class="hljs-string">f\'<span class="hljs-subst">{&lt;el&gt;!r}</span>\'</span>\n' +
   'Z = dataclasses.make_dataclass(<span class="hljs-string">\'Z\'</span>, [<span class="hljs-string">\'a\'</span>]); print/str/repr(Z(&lt;el&gt;))\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>&lt;el&gt;\n';
@@ -87,11 +88,13 @@ const DATACLASS =
 
 const SHUTIL_COPY =
   'shutil.copy(from, to)               <span class="hljs-comment"># Copies the file. \'to\' can exist or be a dir.</span>\n' +
+  'shutil.copy2(from, to)              <span class="hljs-comment"># Also copies creation and modification time.</span>\n' +
   'shutil.copytree(from, to)           <span class="hljs-comment"># Copies the directory. \'to\' must not exist.</span>\n';
 
 const OS_RENAME =
   'os.rename(from, to)                 <span class="hljs-comment"># Renames/moves the file or directory.</span>\n' +
-  'os.replace(from, to)                <span class="hljs-comment"># Same, but overwrites \'to\' if it exists.</span>\n';
+  'os.replace(from, to)                <span class="hljs-comment"># Same, but overwrites file \'to\' even on Windows.</span>\n' +
+  'shutil.move(from, to)               <span class="hljs-comment"># Rename() that moves into \'to\' if it\'s a dir.</span>\n';
 
 const STRUCT_FORMAT =
   '<span class="hljs-section">\'&lt;n&gt;s\'</span><span class="hljs-attribute"></span>';
@@ -134,10 +137,9 @@ const COROUTINES =
   '\n' +
   '<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">human_controller</span><span class="hljs-params">(screen, moves)</span>:</span>\n' +
   '    <span class="hljs-keyword">while</span> <span class="hljs-keyword">True</span>:\n' +
-  '        ch = screen.getch()\n' +
   '        key_mappings = {<span class="hljs-number">258</span>: D.s, <span class="hljs-number">259</span>: D.n, <span class="hljs-number">260</span>: D.w, <span class="hljs-number">261</span>: D.e}\n' +
-  '        <span class="hljs-keyword">if</span> ch <span class="hljs-keyword">in</span> key_mappings:\n' +
-  '            moves.put_nowait((<span class="hljs-string">\'*\'</span>, key_mappings[ch]))\n' +
+  '        <span class="hljs-keyword">if</span> d := key_mappings.get(screen.getch()):\n' +
+  '            moves.put_nowait((<span class="hljs-string">\'*\'</span>, d))\n' +
   '        <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">0.005</span>)\n' +
   '\n' +
   '<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">model</span><span class="hljs-params">(moves, state)</span>:</span>\n' +
@@ -155,7 +157,33 @@ const COROUTINES =
   '        <span class="hljs-keyword">for</span> id_, p <span class="hljs-keyword">in</span> state.items():\n' +
   '            screen.addstr(offset.y + (p.y - state[<span class="hljs-string">\'*\'</span>].y + H//<span class="hljs-number">2</span>) % H,\n' +
   '                          offset.x + (p.x - state[<span class="hljs-string">\'*\'</span>].x + W//<span class="hljs-number">2</span>) % W, str(id_))\n' +
+  '        screen.refresh()\n' +
   '        <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">0.005</span>)\n' +
+  '\n' +
+  '<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">\'__main__\'</span>:\n' +
+  '    curses.wrapper(main)\n';
+
+const CURSES =
+  '<span class="hljs-keyword">import</span> curses, curses.ascii, os\n' +
+  '<span class="hljs-keyword">from</span> curses <span class="hljs-keyword">import</span> A_REVERSE, KEY_DOWN, KEY_UP, KEY_LEFT, KEY_RIGHT, KEY_ENTER\n' +
+  '\n' +
+  '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">(screen)</span>:</span>\n' +
+  '    ch, first, selected, paths = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, os.listdir()\n' +
+  '    <span class="hljs-keyword">while</span> ch != curses.ascii.ESC:\n' +
+  '        height, width = screen.getmaxyx()\n' +
+  '        screen.erase()\n' +
+  '        <span class="hljs-keyword">for</span> y, filename <span class="hljs-keyword">in</span> enumerate(paths[first : first+height]):\n' +
+  '            color = A_REVERSE <span class="hljs-keyword">if</span> filename == paths[selected] <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>\n' +
+  '            screen.addstr(y, <span class="hljs-number">0</span>, filename[:width-<span class="hljs-number">1</span>], color)\n' +
+  '        ch = screen.getch()\n' +
+  '        selected += (ch == KEY_DOWN) - (ch == KEY_UP)\n' +
+  '        selected = max(<span class="hljs-number">0</span>, min(len(paths)-<span class="hljs-number">1</span>, selected))\n' +
+  '        first += (selected &gt;= first + height) - (selected &lt; first)\n' +
+  '        <span class="hljs-keyword">if</span> ch <span class="hljs-keyword">in</span> [KEY_LEFT, KEY_RIGHT, KEY_ENTER, ord(<span class="hljs-string">\'\\n\'</span>), ord(<span class="hljs-string">\'\\r\'</span>)]:\n' +
+  '            new_dir = <span class="hljs-string">\'..\'</span> <span class="hljs-keyword">if</span> ch == KEY_LEFT <span class="hljs-keyword">else</span> paths[selected]\n' +
+  '            <span class="hljs-keyword">if</span> os.path.isdir(new_dir):\n' +
+  '                os.chdir(new_dir)\n' +
+  '                first, selected, paths = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, os.listdir()\n' +
   '\n' +
   '<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">\'__main__\'</span>:\n' +
   '    curses.wrapper(main)\n';
@@ -167,6 +195,18 @@ const PROGRESS_BAR =
   '<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">for</span> el <span class="hljs-keyword">in</span> tqdm([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], desc=<span class="hljs-string">\'Processing\'</span>):\n' +
   '<span class="hljs-meta">... </span>    sleep(<span class="hljs-number">1</span>)\n' +
   'Processing: 100%|████████████████████| 3/3 [00:03&lt;00:00,  1.00s/it]\n';
+
+const LOGGING_EXAMPLE =
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>logging.basicConfig(level=<span class="hljs-string">\'WARNING\'</span>)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>logger = logging.getLogger(<span class="hljs-string">\'my_module\'</span>)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>handler = logging.FileHandler(<span class="hljs-string">\'test.log\'</span>)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>formatter = logging.Formatter(<span class="hljs-string">\'%(asctime)s %(levelname)s:%(name)s:%(message)s\'</span>)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>handler.setFormatter(formatter)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>logger.addHandler(handler)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>logger.critical(<span class="hljs-string">\'Running out of disk space.\'</span>)\n' +
+  'CRITICAL:my_module:Running out of disk space.\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>print(open(<span class="hljs-string">\'test.log\'</span>).read())\n' +
+  '2023-02-07 23:21:01,430 CRITICAL:my_module:Running out of disk space.\n';
 
 const AUDIO =
   '<span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> pi, sin\n' +
@@ -367,24 +407,24 @@ const DIAGRAM_7_B =
   " ├── SystemExit                   <span class='hljs-comment'># Raised by the sys.exit() function.</span>\n" +
   " ├── KeyboardInterrupt            <span class='hljs-comment'># Raised when the user hits the interrupt key (ctrl-c).</span>\n" +
   " └── Exception                    <span class='hljs-comment'># User-defined exceptions should be derived from this class.</span>\n" +
-  "      ├── ArithmeticError         <span class='hljs-comment'># Base class for arithmetic errors.</span>\n" +
-  "      │    └── ZeroDivisionError  <span class='hljs-comment'># Raised when dividing by zero.</span>\n" +
+  "      ├── ArithmeticError         <span class='hljs-comment'># Base class for arithmetic errors such as ZeroDivisionError.</span>\n" +
   "      ├── AssertionError          <span class='hljs-comment'># Raised by `assert &lt;exp&gt;` if expression returns false value.</span>\n" +
-  "      ├── AttributeError          <span class='hljs-comment'># Raised when an attribute is missing.</span>\n" +
-  "      ├── EOFError                <span class='hljs-comment'># Raised by input() when it hits end-of-file condition.</span>\n" +
+  "      ├── AttributeError          <span class='hljs-comment'># Raised when object doesn't have requested attribute/method.</span>\n" +
+  "      ├── EOFError                <span class='hljs-comment'># Raised by input() when it hits an end-of-file condition.</span>\n" +
   "      ├── LookupError             <span class='hljs-comment'># Base class for errors when a collection can't find an item.</span>\n" +
   "      │    ├── IndexError         <span class='hljs-comment'># Raised when a sequence index is out of range.</span>\n" +
   "      │    └── KeyError           <span class='hljs-comment'># Raised when a dictionary key or set element is missing.</span>\n" +
   "      ├── MemoryError             <span class='hljs-comment'># Out of memory. Could be too late to start deleting vars.</span>\n" +
   "      ├── NameError               <span class='hljs-comment'># Raised when nonexistent name (variable/func/class) is used.</span>\n" +
   "      │    └── UnboundLocalError  <span class='hljs-comment'># Raised when local name is used before it's being defined.</span>\n" +
-  "      ├── OSError                 <span class='hljs-comment'># Errors such as FileExistsError/PermissionError (see Open).</span>\n" +
+  "      ├── OSError                 <span class='hljs-comment'># Errors such as FileExistsError/PermissionError (see #Open).</span>\n" +
+  "      │    └── ConnectionError    <span class='hljs-comment'># Errors such as BrokenPipeError/ConnectionAbortedError.</span>\n" +
   "      ├── RuntimeError            <span class='hljs-comment'># Raised by errors that don't fall into other categories.</span>\n" +
+  "      │    ├── NotImplementedErr  <span class='hljs-comment'># Can be raised by abstract methods or by unfinished code.</span>\n" +
   "      │    └── RecursionError     <span class='hljs-comment'># Raised when the maximum recursion depth is exceeded.</span>\n" +
   "      ├── StopIteration           <span class='hljs-comment'># Raised by next() when run on an empty iterator.</span>\n" +
-  "      ├── TypeError               <span class='hljs-comment'># Raised when an argument is of wrong type.</span>\n" +
-  "      └── ValueError              <span class='hljs-comment'># When an argument is of right type but inappropriate value.</span>\n" +
-  "           └── UnicodeError       <span class='hljs-comment'># Raised when encoding/decoding strings to/from bytes fails.</span>\n";
+  "      ├── TypeError               <span class='hljs-comment'># Raised when an argument is of the wrong type.</span>\n" +
+  "      └── ValueError              <span class='hljs-comment'># When argument has the right type but inappropriate value.</span>\n";
 
 const DIAGRAM_8_A =
   '+-----------+------------+------------+------------+\n' +
@@ -420,19 +460,19 @@ const DIAGRAM_9_B =
   "┗━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_95_A =
-  "+------------+--------------+-----------+-----------------------------------+\n" +
-  "| Dialects   | pip3 install | import    | Dependencies                      |\n" +
-  "+------------+--------------+-----------+-----------------------------------+\n";
+  '+------------+--------------+----------+----------------------------------+\n' +
+  '| Dialect    | pip3 install | import   |           Dependencies           |\n' +
+  '+------------+--------------+----------+----------------------------------+\n';
 
 const DIAGRAM_95_B =
-  "┏━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +
-  "┃ Dialects   │ pip3 install │ import    │ Dependencies                      ┃\n" +
-  "┠────────────┼──────────────┼───────────┼───────────────────────────────────┨\n" +
-  "┃ mysql      │ mysqlclient  │ MySQLdb   │ www.pypi.org/project/mysqlclient  ┃\n" +
-  "┃ postgresql │ psycopg2     │ psycopg2  │ www.psycopg.org/docs/install.html ┃\n" +
-  "┃ mssql      │ pyodbc       │ pyodbc    │ apt install g++ unixodbc-dev      ┃\n" +
-  "┃ oracle     │ cx_oracle    │ cx_Oracle │ Oracle Instant Client             ┃\n" +
-  "┗━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
+  '┏━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n' +
+  '┃ Dialect    │ pip3 install │ import   │           Dependencies           ┃\n' +
+  '┠────────────┼──────────────┼──────────┼──────────────────────────────────┨\n' +
+  '┃ mysql      │ mysqlclient  │ MySQLdb  │ www.pypi.org/project/mysqlclient ┃\n' +
+  '┃ postgresql │ psycopg2     │ psycopg2 │ www.pypi.org/project/psycopg2    ┃\n' +
+  '┃ mssql      │ pyodbc       │ pyodbc   │ www.pypi.org/project/pyodbc      ┃\n' +
+  '┃ oracle     │ oracledb     │ oracledb │ www.pypi.org/project/oracledb    ┃\n' +
+  '┗━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n';
 
 const DIAGRAM_10_A =
   '+-------------+-------------+\n' +
@@ -468,6 +508,22 @@ const DIAGRAM_11_B =
   '┃     str     │             ┃\n' +
   '┗━━━━━━━━━━━━━┷━━━━━━━━━━━━━┛\n';
 
+const DIAGRAM_115_A =
+  '+--------------+-------------------------------+------------+----------+------+\n' +
+  '| pip3 install |          How to run           |   Target   |   Type   | Live |\n' +
+  '+--------------+-------------------------------+------------+----------+------+\n';
+
+const DIAGRAM_115_B =
+  '┏━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━┯━━━━━━┓\n' +
+  '┃ pip3 install │          How to run           │   Target   │   Type   │ Live ┃\n' +
+  '┠──────────────┼───────────────────────────────┼────────────┼──────────┼──────┨\n' +
+  '┃ py-spy       │ py-spy top -- python3 test.py │    CPU     │ Sampling │ Yes  ┃\n' +
+  '┃ pyinstrument │ pyinstrument test.py          │    CPU     │ Sampling │ No   ┃\n' +
+  '┃ scalene      │ scalene test.py               │ CPU+Memory │ Sampling │ No   ┃\n' +
+  '┃ memray       │ memray run --live test.py     │   Memory   │ Tracing  │ Yes  ┃\n' +
+  '┃ filprofiler  │ fil-profile run test.py       │   Memory   │ Tracing  │ No   ┃\n' +
+  '┗━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━┷━━━━━━┛\n';
+
 const DIAGRAM_12_A =
   '+-----------+-----------+------+-----------+\n' +
   '| sampwidth |    min    | zero |    max    |\n' +
@@ -483,26 +539,26 @@ const DIAGRAM_12_B =
   '┗━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━┷━━━━━━━━━━━┛\n';
 
 const DIAGRAM_13_A =
-  '| sr.apply(…)     |      3      |    sum  3   |     s  3      |';
+  '| sr.apply(…)   |      3      |    sum  3   |     s  3      |';
 
 const DIAGRAM_13_B =
-  "┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
-  "┃                 │    'sum'    │   ['sum']   │ {'s': 'sum'}  ┃\n" +
-  "┠─────────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ sr.apply(…)     │      3      │    sum  3   │     s  3      ┃\n" +
-  "┃ sr.agg(…)       │             │             │               ┃\n" +
-  "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
+  "┏━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃               │    'sum'    │   ['sum']   │ {'s': 'sum'}  ┃\n" +
+  "┠───────────────┼─────────────┼─────────────┼───────────────┨\n" +
+  "┃ sr.apply(…)   │      3      │    sum  3   │     s  3      ┃\n" +
+  "┃ sr.agg(…)     │             │             │               ┃\n" +
+  "┗━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
   "\n" +
-  "┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
-  "┃                 │    'rank'   │   ['rank']  │ {'r': 'rank'} ┃\n" +
-  "┠─────────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ sr.apply(…)     │             │      rank   │               ┃\n" +
-  "┃ sr.agg(…)       │     x  1    │   x     1   │    r  x  1    ┃\n" +
-  "┃ sr.transform(…) │     y  2    │   y     2   │       y  2    ┃\n" +
-  "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
+  "┏━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃               │    'rank'   │   ['rank']  │ {'r': 'rank'} ┃\n" +
+  "┠───────────────┼─────────────┼─────────────┼───────────────┨\n" +
+  "┃ sr.apply(…)   │             │      rank   │               ┃\n" +
+  "┃ sr.agg(…)     │     x  1    │   x     1   │    r  x  1    ┃\n" +
+  "┃               │     y  2    │   y     2   │       y  2    ┃\n" +
+  "┗━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_14_A =
-  "|                 |    'rank'   |   ['rank']  | {'r': 'rank'} |";
+  "|               |    'rank'   |   ['rank']  | {'r': 'rank'} |";
 
 const DIAGRAM_15_A =
   '+------------------------+---------------+------------+------------+--------------------------+';
@@ -700,6 +756,7 @@ function updateDiagrams() {
   $(`code:contains(${DIAGRAM_95_A})`).html(DIAGRAM_95_B);
   $(`code:contains(${DIAGRAM_10_A})`).html(DIAGRAM_10_B);
   $(`code:contains(${DIAGRAM_11_A})`).html(DIAGRAM_11_B);
+  $(`code:contains(${DIAGRAM_115_A})`).html(DIAGRAM_115_B);
   $(`code:contains(${DIAGRAM_12_A})`).html(DIAGRAM_12_B).removeClass("text").removeClass("language-text").addClass("python");
   $(`code:contains(${DIAGRAM_13_A})`).html(DIAGRAM_13_B).removeClass("text").removeClass("language-text").addClass("python");
   $(`code:contains(${DIAGRAM_14_A})`).parent().remove();
@@ -710,8 +767,7 @@ function updateDiagrams() {
 }
 
 function highlightCode() {
-  setApaches(['<D>', '<T>', '<DT>', '<TD>', '<a>', '<n>']);
-  $('code').not('.python').not('.text').not('.bash').not('.apache').addClass('python');
+  changeCodeLanguages();
   $('code').each(function(index) {
       hljs.highlightBlock(this);
   });
@@ -721,6 +777,15 @@ function highlightCode() {
   fixPageBreaksFile();
   fixPageBreaksStruct();
   insertPageBreaks();
+}
+
+function changeCodeLanguages() {
+  setApaches(['<D>', '<T>', '<DT>', '<TD>', '<a>', '<n>']);
+  $('code').not('.python').not('.text').not('.bash').not('.apache').addClass('python');
+  $('code:contains(<el>       = <2d_array>[row_index, column_index])').removeClass().addClass('bash');
+  $('code:contains(<2d_array> = <2d_array>[row_indexes])').removeClass().addClass('bash');
+  $('code:contains(<2d_bools> = <2d_array> ><== <el/1d/2d_array>)').removeClass().addClass('bash');
+  $('code.perl').removeClass().addClass('python');
 }
 
 function setApaches(elements) {
@@ -737,8 +802,8 @@ function fixClasses() {
 function fixHighlights() {
   $(`code:contains(@lru_cache(maxsize=None))`).html(LRU_CACHE);
   $(`code:contains(@debug(print_result=True))`).html(PARAMETRIZED_DECORATOR);
-  $(`code:contains((self, a=None):)`).html(CONSTRUCTOR_OVERLOADING);
   $(`code:contains(print/str/repr([<el>]))`).html(REPR_USE_CASES);
+  $(`code:contains((self, a=None):)`).html(CONSTRUCTOR_OVERLOADING);
   $(`code:contains(make_dataclass(\'<class_name>\')`).html(DATACLASS);
   $(`code:contains(shutil.copy)`).html(SHUTIL_COPY);
   $(`code:contains(os.rename)`).html(OS_RENAME);
@@ -746,7 +811,9 @@ function fixHighlights() {
   $(`code:contains(\'<class_name>\', <tuple_of_parents>, <dict_of_class_attributes>)`).html(TYPE);
   $(`code:contains(ValueError: malformed node)`).html(EVAL);
   $(`code:contains(import asyncio, collections, curses, curses.textpad, enum, random)`).html(COROUTINES);
+  $(`code:contains(import curses, curses.ascii, os)`).html(CURSES);
   $(`code:contains(pip3 install tqdm)`).html(PROGRESS_BAR);
+  $(`code:contains(>>> logging.basicConfig(level=)`).html(LOGGING_EXAMPLE);
   $(`code:contains(samples_f = (sin(i *)`).html(AUDIO);
   $(`code:contains(collections, dataclasses, enum, io, itertools)`).html(MARIO);
   $(`code:contains(pip3 install pyinstaller)`).html(PYINSTALLER);
