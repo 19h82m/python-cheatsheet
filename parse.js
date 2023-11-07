@@ -39,10 +39,16 @@ const TOC =
   '    <strong><span class="hljs-string">\'4. System\'</span></strong>:      [<a href="#exit">Exit</a>, <a href="#print">Print</a>, <a href="#input">Input</a>, <a href="#commandlinearguments">Command_Line_Arguments</a>, <a href="#open">Open</a>, <a href="#paths">Path</a>, <a href="#oscommands">OS_Commands</a>],\n' +
   '    <strong><span class="hljs-string">\'5. Data\'</span></strong>:        [<a href="#json">JSON</a>, <a href="#pickle">Pickle</a>, <a href="#csv">CSV</a>, <a href="#sqlite">SQLite</a>, <a href="#bytes">Bytes</a>, <a href="#struct">Struct</a>, <a href="#array">Array</a>, <a href="#memoryview">Memory_View</a>, <a href="#deque">Deque</a>],\n' +
   '    <strong><span class="hljs-string">\'6. Advanced\'</span></strong>:    [<a href="#threading">Threading</a>, <a href="#operator">Operator</a>, <a href="#introspection">Introspection</a>, <a href="#metaprogramming">Metaprograming</a>, <a href="#eval">Eval</a>, <a href="#coroutines">Coroutine</a>],\n' +
-  '    <strong><span class="hljs-string">\'7. Libraries\'</span></strong>:   [<a href="#progressbar">Progress_Bar</a>, <a href="#plot">Plot</a>, <a href="#table">Table</a>, <a href="#curses">Curses</a>, <a href="#logging">Logging</a>, <a href="#scraping">Scraping</a>, <a href="#web">Web</a>, <a href="#profiling">Profile</a>,\n' +
-  '                       <a href="#numpy">NumPy</a>, <a href="#image">Image</a>, <a href="#audio">Audio</a>, <a href="#pygame">Games</a>, <a href="#pandas">Data</a>]\n' +
+  '    <strong><span class="hljs-string">\'7. Libraries\'</span></strong>:   [<a href="#progressbar">Progress_Bar</a>, <a href="#plot">Plot</a>, <a href="#table">Tables</a>, <a href="#curses">Curses</a>, <a href="#logging">Logging</a>, <a href="#scraping">Scraping</a>, <a href="#web">Web</a>, <a href="#profiling">Profile</a>],\n' +
+  '    <strong><span class="hljs-string">\'8. Multimedia\'</span></strong>:  [<a href="#numpy">NumPy</a>, <a href="#image">Image</a>, <a href="#animation">Animation</a>, <a href="#audio">Audio</a>, <a href="#pygame">Pygame</a>, <a href="#pandas">Pandas</a>, <a href="#plotly">Plotly</a>, <a href="#pysimplegui">PySimpleGUI</a>]\n' +
   '}\n' +
   '</code></pre>\n';
+
+const BIN_HEX =
+  '&lt;int&gt; = ±<span class="hljs-number">0b</span>&lt;bin&gt;                                  <span class="hljs-comment"># Or: ±0x&lt;hex&gt;</span>\n' +
+  '&lt;int&gt; = int(<span class="hljs-string">\'±&lt;bin&gt;\'</span>, <span class="hljs-number">2</span>)                          <span class="hljs-comment"># Or: int(\'±&lt;hex&gt;\', 16)</span>\n' +
+  '&lt;int&gt; = int(<span class="hljs-string">\'±0b&lt;bin&gt;\'</span>, <span class="hljs-number">0</span>)                        <span class="hljs-comment"># Or: int(\'±0x&lt;hex&gt;\', 0)</span>\n' +
+  '&lt;str&gt; = bin(&lt;int&gt;)                                <span class="hljs-comment"># Returns \'[-]0b&lt;bin&gt;\'.</span>\n';
 
 const LRU_CACHE =
   '<span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache\n' +
@@ -164,17 +170,17 @@ const COROUTINES =
   '    curses.wrapper(main)\n';
 
 const CURSES =
-  '<span class="hljs-keyword">import</span> curses, curses.ascii, os\n' +
+  '<span class="hljs-keyword">import</span> curses, os\n' +
   '<span class="hljs-keyword">from</span> curses <span class="hljs-keyword">import</span> A_REVERSE, KEY_DOWN, KEY_UP, KEY_LEFT, KEY_RIGHT, KEY_ENTER\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">(screen)</span>:</span>\n' +
   '    ch, first, selected, paths = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, os.listdir()\n' +
-  '    <span class="hljs-keyword">while</span> ch != curses.ascii.ESC:\n' +
+  '    <span class="hljs-keyword">while</span> ch != ord(<span class="hljs-string">\'q\'</span>):\n' +
   '        height, width = screen.getmaxyx()\n' +
   '        screen.erase()\n' +
   '        <span class="hljs-keyword">for</span> y, filename <span class="hljs-keyword">in</span> enumerate(paths[first : first+height]):\n' +
   '            color = A_REVERSE <span class="hljs-keyword">if</span> filename == paths[selected] <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>\n' +
-  '            screen.addstr(y, <span class="hljs-number">0</span>, filename[:width-<span class="hljs-number">1</span>], color)\n' +
+  '            screen.addnstr(y, <span class="hljs-number">0</span>, filename, width-<span class="hljs-number">1</span>, color)\n' +
   '        ch = screen.getch()\n' +
   '        selected += (ch == KEY_DOWN) - (ch == KEY_UP)\n' +
   '        selected = max(<span class="hljs-number">0</span>, min(len(paths)-<span class="hljs-number">1</span>, selected))\n' +
@@ -197,12 +203,13 @@ const PROGRESS_BAR =
   'Processing: 100%|████████████████████| 3/3 [00:03&lt;00:00,  1.00s/it]\n';
 
 const LOGGING_EXAMPLE =
-  '<span class="hljs-meta">&gt;&gt;&gt; </span>logging.basicConfig(level=<span class="hljs-string">\'WARNING\'</span>)\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>logger = logging.getLogger(<span class="hljs-string">\'my_module\'</span>)\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>handler = logging.FileHandler(<span class="hljs-string">\'test.log\'</span>)\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>formatter = logging.Formatter(<span class="hljs-string">\'%(asctime)s %(levelname)s:%(name)s:%(message)s\'</span>)\n' +
-  '<span class="hljs-meta">&gt;&gt;&gt; </span>handler.setFormatter(formatter)\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>logger.addHandler(handler)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>handler.setFormatter(formatter)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>logging.basicConfig(level=<span class="hljs-string">\'DEBUG\'</span>)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>logging.root.handlers[<span class="hljs-number">0</span>].setLevel(<span class="hljs-string">\'WARNING\'</span>)\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>logger.critical(<span class="hljs-string">\'Running out of disk space.\'</span>)\n' +
   'CRITICAL:my_module:Running out of disk space.\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>print(open(<span class="hljs-string">\'test.log\'</span>).read())\n' +
@@ -288,12 +295,13 @@ const MARIO =
   '<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">\'__main__\'</span>:\n' +
   '    main()\n';
 
-const PYINSTALLER =
-  '$ pip3 install pyinstaller\n' +
-  '$ pyinstaller script.py                        <span class="hljs-comment"># Compiles into \'./dist/script\' directory.</span>\n' +
-  '$ pyinstaller script.py --onefile              <span class="hljs-comment"># Compiles into \'./dist/script\' console app.</span>\n' +
-  '$ pyinstaller script.py --windowed             <span class="hljs-comment"># Compiles into \'./dist/script\' windowed app.</span>\n' +
-  '$ pyinstaller script.py --add-data \'&lt;path&gt;:.\'  <span class="hljs-comment"># Adds file to the root of the executable.</span>\n';
+const PLOTLY =
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>gb = df.groupby(<span class="hljs-string">\'z\'</span>); gb.apply(print)\n' +
+  '   x  y  z\n' +
+  'a  <span class="hljs-number">1</span>  <span class="hljs-number">2</span>  <span class="hljs-number">3</span>\n' +
+  '   x  y  z\n' +
+  'b  <span class="hljs-number">4</span>  <span class="hljs-number">5</span>  <span class="hljs-number">6</span>\n' +
+  'c  <span class="hljs-number">7</span>  <span class="hljs-number">8</span>  <span class="hljs-number">6</span>';
 
 const INDEX =
   '<li><strong>Only available in the <a href="https://transactions.sendowl.com/products/78175486/4422834F/view">PDF</a>.</strong></li>\n' +
@@ -539,13 +547,13 @@ const DIAGRAM_12_B =
   '┗━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━┷━━━━━━━━━━━┛\n';
 
 const DIAGRAM_13_A =
-  '| sr.apply(…)   |      3      |    sum  3   |     s  3      |';
+  '| sr.apply(…)   |      5      |    sum  5   |     s  5      |';
 
 const DIAGRAM_13_B =
   "┏━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
   "┃               │    'sum'    │   ['sum']   │ {'s': 'sum'}  ┃\n" +
   "┠───────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ sr.apply(…)   │      3      │    sum  3   │     s  3      ┃\n" +
+  "┃ sr.apply(…)   │      5      │    sum  5   │     s  5      ┃\n" +
   "┃ sr.agg(…)     │             │             │               ┃\n" +
   "┗━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
   "\n" +
@@ -591,52 +599,50 @@ const DIAGRAM_15_B =
   "┃ l.combine_first(r)     │    x   y   z  │            │            │ Adds missing rows and    ┃\n" +
   "┃                        │ a  1   2   .  │            │            │ columns. Also updates    ┃\n" +
   "┃                        │ b  3   4   5  │            │            │ items that contain NaN.  ┃\n" +
-  "┃                        │ c  .   6   7  │            │            │ R must be a DataFrame.   ┃\n" +
+  "┃                        │ c  .   6   7  │            │            │ Argument r must be a DF. ┃\n" +
   "┗━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_16_A =
-  '| df.apply(…)     |             |       x  y  |               |';
+  '| df.apply(…)     |     x  4    |       x  y  |     x  4      |';
 
 const DIAGRAM_16_B =
   "┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
   "┃                 │    'sum'    │   ['sum']   │ {'x': 'sum'}  ┃\n" +
   "┠─────────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ df.apply(…)     │             │       x  y  │               ┃\n" +
-  "┃ df.agg(…)       │     x  4    │  sum  4  6  │     x  4      ┃\n" +
-  "┃                 │     y  6    │             │               ┃\n" +
+  "┃ df.apply(…)     │     x  4    │       x  y  │     x  4      ┃\n" +
+  "┃ df.agg(…)       │     y  6    │  sum  4  6  │               ┃\n" +
   "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
   "\n" +
   "┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
   "┃                 │    'rank'   │   ['rank']  │ {'x': 'rank'} ┃\n" +
   "┠─────────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ df.apply(…)     │      x  y   │      x    y │        x      ┃\n" +
-  "┃ df.agg(…)       │   a  1  1   │   rank rank │     a  1      ┃\n" +
-  "┃ df.transform(…) │   b  2  2   │ a    1    1 │     b  2      ┃\n" +
-  "┃                 │             │ b    2    2 │               ┃\n" +
+  "┃ df.apply(…)     │             │      x    y │               ┃\n" +
+  "┃ df.agg(…)       │      x  y   │   rank rank │        x      ┃\n" +
+  "┃ df.transform(…) │   a  1  1   │ a    1    1 │     a  1      ┃\n" +
+  "┃                 │   b  2  2   │ b    2    2 │     b  2      ┃\n" +
   "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_17_A =
   "|                 |    'rank'   |   ['rank']  | {'x': 'rank'} |";
 
 const DIAGRAM_18_A =
-  '| gb.agg(…)       |      x   y  |      x  y   |      x    y |        x      |';
+  '| gb.agg(…)       |      x   y  |             |      x    y |               |';
 
 const DIAGRAM_18_B =
   "┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
   "┃                 │    'sum'    │    'rank'   │   ['rank']  │ {'x': 'rank'} ┃\n" +
   "┠─────────────────┼─────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ gb.agg(…)       │      x   y  │      x  y   │      x    y │        x      ┃\n" +
-  "┃                 │  z          │   a  1  1   │   rank rank │     a  1      ┃\n" +
-  "┃                 │  3   1   2  │   b  1  1   │ a    1    1 │     b  1      ┃\n" +
-  "┃                 │  6  11  13  │   c  2  2   │ b    1    1 │     c  2      ┃\n" +
-  "┃                 │             │             │ c    2    2 │               ┃\n" +
+  "┃ gb.agg(…)       │      x   y  │             │      x    y │               ┃\n" +
+  "┃                 │  z          │      x  y   │   rank rank │        x      ┃\n" +
+  "┃                 │  3   1   2  │   a  1  1   │ a    1    1 │     a  1      ┃\n" +
+  "┃                 │  6  11  13  │   b  1  1   │ b    1    1 │     b  1      ┃\n" +
+  "┃                 │             │   c  2  2   │ c    2    2 │     c  2      ┃\n" +
   "┠─────────────────┼─────────────┼─────────────┼─────────────┼───────────────┨\n" +
   "┃ gb.transform(…) │      x   y  │      x  y   │             │               ┃\n" +
   "┃                 │  a   1   2  │   a  1  1   │             │               ┃\n" +
   "┃                 │  b  11  13  │   b  1  1   │             │               ┃\n" +
   "┃                 │  c  11  13  │   c  2  2   │             │               ┃\n" +
   "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
-
 
 const MENU = '<a href="https://raw.githubusercontent.com/gto76/python-cheatsheet/main/README.md">Download text file</a>, <a href="https://transactions.sendowl.com/products/78175486/4422834F/view">Buy PDF</a>, <a href="https://github.com/gto76/python-cheatsheet">Fork me on GitHub</a>, <a href="https://github.com/gto76/python-cheatsheet/wiki/Frequently-Asked-Questions">Check out FAQ</a> or <a href="index.html?theme=dark3">Switch to dark theme</a>.\n';
 
@@ -784,7 +790,7 @@ function changeCodeLanguages() {
   $('code').not('.python').not('.text').not('.bash').not('.apache').addClass('python');
   $('code:contains(<el>       = <2d_array>[row_index, column_index])').removeClass().addClass('bash');
   $('code:contains(<2d_array> = <2d_array>[row_indexes])').removeClass().addClass('bash');
-  $('code:contains(<2d_bools> = <2d_array> ><== <el/1d/2d_array>)').removeClass().addClass('bash');
+  $('code:contains(<2d_bools> = <2d_array> > <el/1d/2d_array>)').removeClass().addClass('bash');
   $('code.perl').removeClass().addClass('python');
 }
 
@@ -800,6 +806,7 @@ function fixClasses() {
 }
 
 function fixHighlights() {
+  $(`code:contains(<int> = ±0b<bin>)`).html(BIN_HEX);
   $(`code:contains(@lru_cache(maxsize=None))`).html(LRU_CACHE);
   $(`code:contains(@debug(print_result=True))`).html(PARAMETRIZED_DECORATOR);
   $(`code:contains(print/str/repr([<el>]))`).html(REPR_USE_CASES);
@@ -811,12 +818,12 @@ function fixHighlights() {
   $(`code:contains(\'<class_name>\', <tuple_of_parents>, <dict_of_class_attributes>)`).html(TYPE);
   $(`code:contains(ValueError: malformed node)`).html(EVAL);
   $(`code:contains(import asyncio, collections, curses, curses.textpad, enum, random)`).html(COROUTINES);
-  $(`code:contains(import curses, curses.ascii, os)`).html(CURSES);
+  $(`code:contains(import curses, os)`).html(CURSES);
   $(`code:contains(pip3 install tqdm)`).html(PROGRESS_BAR);
   $(`code:contains(>>> logging.basicConfig(level=)`).html(LOGGING_EXAMPLE);
   $(`code:contains(samples_f = (sin(i *)`).html(AUDIO);
   $(`code:contains(collections, dataclasses, enum, io, itertools)`).html(MARIO);
-  $(`code:contains(pip3 install pyinstaller)`).html(PYINSTALLER);
+  $(`code:contains(>>> gb = df.groupby)`).html(PLOTLY);
   $(`ul:contains(Only available in)`).html(INDEX);
 }
 
@@ -840,8 +847,8 @@ function fixPageBreaksFile() {
 }
 
 function fixPageBreaksStruct() {
-  const formatDiv = $('#floatingpointtypes').parent().parent().parent().parent()
-  move(formatDiv, 'floatingpointtypes')
+  const formatDiv = $('#floatingpointtypesstructalwaysusesstandardsizes').parent().parent().parent().parent()
+  move(formatDiv, 'floatingpointtypesstructalwaysusesstandardsizes')
   move(formatDiv, 'integertypesuseacapitalletterforunsignedtypeminimumandstandardsizesareinbrackets')
   move(formatDiv, 'forstandardsizesstartformatstringwith')
 }
