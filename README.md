@@ -13,9 +13,9 @@ Contents
 **&nbsp;&nbsp;&nbsp;** **3. Syntax:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Args`](#arguments)**__,__ **[`Inline`](#inline)**__,__ **[`Import`](#imports)**__,__ **[`Decorator`](#decorator)**__,__ **[`Class`](#class)**__,__ **[`Duck_Types`](#duck-types)**__,__ **[`Enum`](#enum)**__,__ **[`Exception`](#exceptions)**__.__  
 **&nbsp;&nbsp;&nbsp;** **4. System:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Exit`](#exit)**__,__ **[`Print`](#print)**__,__ **[`Input`](#input)**__,__ **[`Command_Line_Arguments`](#command-line-arguments)**__,__ **[`Open`](#open)**__,__ **[`Path`](#paths)**__,__ **[`OS_Commands`](#os-commands)**__.__  
 **&nbsp;&nbsp;&nbsp;** **5. Data:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`JSON`](#json)**__,__ **[`Pickle`](#pickle)**__,__ **[`CSV`](#csv)**__,__ **[`SQLite`](#sqlite)**__,__ **[`Bytes`](#bytes)**__,__ **[`Struct`](#struct)**__,__ **[`Array`](#array)**__,__ **[`Memory_View`](#memory-view)**__,__ **[`Deque`](#deque)**__.__  
-**&nbsp;&nbsp;&nbsp;** **6. Advanced:** **&nbsp;&nbsp;&nbsp;**  **[`Threading`](#threading)**__,__ **[`Operator`](#operator)**__,__ **[`Introspection`](#introspection)**__,__ **[`Metaprograming`](#metaprogramming)**__,__ **[`Eval`](#eval)**__,__ **[`Coroutines`](#coroutines)**__.__  
-**&nbsp;&nbsp;&nbsp;** **7. Libraries:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Progress_Bar`](#progress-bar)**__,__ **[`Plot`](#plot)**__,__ **[`Tables`](#table)**__,__ **[`Curses`](#curses)**__,__ **[`Logging`](#logging)**__,__ **[`Scraping`](#scraping)**__,__ **[`Web`](#web)**__,__ **[`Profile`](#profiling)**__.__  
-**&nbsp;&nbsp;&nbsp;** **8. Multimedia:** **&nbsp;&nbsp;**  **[`NumPy`](#numpy)**__,__ **[`Image`](#image)**__,__ **[`Animation`](#animation)**__,__ **[`Audio`](#audio)**__,__ **[`Pygame`](#pygame)**__,__ **[`Pandas`](#pandas)**__,__ **[`Plotly`](#plotly)**__,__ **[`PySimpleGUI`](#pysimplegui)**__.__
+**&nbsp;&nbsp;&nbsp;** **6. Advanced:** **&nbsp;&nbsp;&nbsp;**  **[`Threading`](#threading)**__,__ **[`Operator`](#operator)**__,__ **[`Match_Stmt`](#match-statement)**__,__ **[`Logging`](#logging)**__,__ **[`Introspection`](#introspection)**__,__ **[`Coroutines`](#coroutines)**__.__  
+**&nbsp;&nbsp;&nbsp;** **7. Libraries:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Progress_Bar`](#progress-bar)**__,__ **[`Plots`](#plot)**__,__ **[`Tables`](#table)**__,__ **[`Curses`](#curses)**__,__ **[`GUIs`](#pysimplegui)**__,__ **[`Scraping`](#scraping)**__,__ **[`Web`](#web)**__,__ **[`Profiling`](#profiling)**__.__  
+**&nbsp;&nbsp;&nbsp;** **8. Multimedia:** **&nbsp;&nbsp;**  **[`NumPy`](#numpy)**__,__ **[`Image`](#image)**__,__ **[`Animation`](#animation)**__,__ **[`Audio`](#audio)**__,__ **[`Synthesizer`](#synthesizer)**__,__ **[`Pygame`](#pygame)**__,__ **[`Pandas`](#pandas)**__,__ **[`Plotly`](#plotly)**__.__
 
 
 Main
@@ -91,7 +91,7 @@ value  = <dict>.setdefault(key, default=None)   # Returns and writes default if 
 <dict>.update(<dict>)                           # Adds items. Replaces ones with matching keys.
 value = <dict>.pop(key)                         # Removes item or raises KeyError if missing.
 {k for k, v in <dict>.items() if v == value}    # Returns set of keys that point to the value.
-{k: v for k, v in <dict>.items() if k in keys}  # Returns a dictionary, filtered by keys.
+{k: v for k, v in <dict>.items() if k in keys}  # Filters the dictionary by keys.
 ```
 
 ### Counter
@@ -317,7 +317,6 @@ String
 ```python
 <bool> = <sub_str> in <str>                  # Checks if string contains the substring.
 <bool> = <str>.startswith(<sub_str>)         # Pass tuple of strings for multiple options.
-<bool> = <str>.endswith(<sub_str>)           # Pass tuple of strings for multiple options.
 <int>  = <str>.find(<sub_str>)               # Returns start index of the first match or -1.
 <int>  = <str>.index(<sub_str>)              # Same, but raises ValueError if missing.
 ```
@@ -332,14 +331,15 @@ String
 <str>  = chr(<int>)                          # Converts int to Unicode character.
 <int>  = ord(<str>)                          # Converts Unicode character to int.
 ```
-* **Use `'unicodedata.normalize("NFC", <str>)'` on strings that may contain characters like `'Ö'` before comparing them, because they can be stored as one or two characters.**
+* **Use `'unicodedata.normalize("NFC", <str>)'` on strings like `'Motörhead'` before comparing them to other strings, because `'ö'` can be stored as one or two characters.**
+* **`'NFC'` converts such characters to a single character, while `'NFD'` converts them to two.**
 
 ### Property Methods
 ```python
-<bool> = <str>.isdecimal()                   # Checks for [0-9].
-<bool> = <str>.isdigit()                     # Checks for [²³¹] and isdecimal().
-<bool> = <str>.isnumeric()                   # Checks for [¼½¾] and isdigit().
-<bool> = <str>.isalnum()                     # Checks for [a-zA-Z] and isnumeric().
+<bool> = <str>.isdecimal()                   # Checks for [0-9]. Also [०-९] and [٠-٩].
+<bool> = <str>.isdigit()                     # Checks for [²³¹…] and isdecimal().
+<bool> = <str>.isnumeric()                   # Checks for [¼½¾], [零〇一…] and isdigit().
+<bool> = <str>.isalnum()                     # Checks for [a-zA-Z…] and isnumeric().
 <bool> = <str>.isprintable()                 # Checks for [ !#$%…] and isalnum().
 <bool> = <str>.isspace()                     # Checks for [ \t\n\r\f\v\x1c-\x1f\x85\xa0…].
 ```
@@ -351,9 +351,6 @@ Regex
 
 ```python
 import re
-```
-
-```python
 <str>   = re.sub(<regex>, new, text, count=0)  # Substitutes all occurrences with 'new'.
 <list>  = re.findall(<regex>, text)            # Returns all occurrences as strings.
 <list>  = re.split(<regex>, text, maxsplit=0)  # Add brackets around regex to include matches.
@@ -368,11 +365,12 @@ import re
 * **Argument `'flags=re.DOTALL'` makes `'.'` also accept the `'\n'`.**
 * **Use `r'\1'` or `'\\1'` for backreference (`'\1'` returns a character with octal code 1).**
 * **Add `'?'` after `'*'` and `'+'` to make them non-greedy.**
+* **`'re.compile(<regex>)'` returns a Pattern object with methods sub(), findall(), …**
 
 ### Match Object
 ```python
 <str>   = <Match>.group()                      # Returns the whole match. Also group(0).
-<str>   = <Match>.group(1)                     # Returns the part inside first brackets.
+<str>   = <Match>.group(1)                     # Returns part inside the first brackets.
 <tuple> = <Match>.groups()                     # Returns all bracketed parts.
 <int>   = <Match>.start()                      # Returns start index of the match.
 <int>   = <Match>.end()                        # Returns exclusive end index of the match.
@@ -380,13 +378,13 @@ import re
 
 ### Special Sequences
 ```python
-'\d' == '[0-9]'                                # Matches decimal characters.
-'\w' == '[a-zA-Z0-9_]'                         # Matches alphanumerics and underscore.
-'\s' == '[ \t\n\r\f\v]'                        # Matches whitespaces.
+'\d' == '[0-9]'                                # Also [०-९…]. Matches a decimal character.
+'\w' == '[a-zA-Z0-9_]'                         # Also [ª²³…]. Matches an alphanumeric or _.
+'\s' == '[ \t\n\r\f\v]'                        # Also [\x1c-\x1f…]. Matches a whitespace.
 ```
 
 * **By default, decimal characters, alphanumerics and whitespaces from all alphabets are matched unless `'flags=re.ASCII'` argument is used.**
-* **As shown above, it restricts all special sequence matches to the first 128 characters and prevents `'\s'` from accepting `'[\x1c-\x1f]'` (the so-called separator characters).**
+* **It restricts special sequence matches to `'[\x00-\x7f]'` (the first 128 characters) and also prevents `'\s'` from accepting `'[\x1c-\x1f]'` (the so-called separator characters).**
 * **Use a capital letter for negation (all non-ASCII characters will be matched when used in combination with ASCII flag).**
 
 
@@ -414,6 +412,7 @@ Format
 {<el>:.<10}                              # '<el>......'
 {<el>:0}                                 # '<el>'
 ```
+* **Objects are rendered using `'format(<el>, <options>)'`.**
 * **Options can be generated dynamically: `f'{<el>:{<str/int>}[…]}'`.**
 * **Adding `'='` to the expression prepends it to the output: `f'{1+1=}'` returns `'1+1=2'`.**
 * **Adding `'!r'` to the expression converts object to string by calling its [repr()](#class) method.**
@@ -589,7 +588,7 @@ Datetime
 **Provides 'date', 'time', 'datetime' and 'timedelta' classes. All are immutable and hashable.**
 
 ```python
-# pip3 install python-dateutil
+# $ pip3 install python-dateutil
 from datetime import date, time, datetime, timedelta, timezone
 from dateutil.tz import tzlocal, gettz
 ```
@@ -628,8 +627,8 @@ from dateutil.tz import tzlocal, gettz
 ```python
 <D/T/DT> = D/T/DT.fromisoformat(<str>)      # Object from ISO string. Raises ValueError.
 <DT>     = DT.strptime(<str>, '<format>')   # Datetime from str, according to format.
-<D/DTn>  = D/DT.fromordinal(<int>)          # D/DTn from days since the Gregorian NYE 1.
-<DTn>    = DT.fromtimestamp(<float>)        # Local time DTn from seconds since the Epoch.
+<D/DTn>  = D/DT.fromordinal(<int>)          # D/DT from days since the Gregorian NYE 1.
+<DTn>    = DT.fromtimestamp(<float>)        # Local naive DT from seconds since the Epoch.
 <DTa>    = DT.fromtimestamp(<float>, <tz>)  # Aware datetime from seconds since the Epoch.
 ```
 * **ISO strings come in following forms: `'YYYY-MM-DD'`, `'HH:MM:SS.mmmuuu[±HH:MM]'`, or both separated by an arbitrary character. All parts following the hours are optional.**
@@ -640,7 +639,7 @@ from dateutil.tz import tzlocal, gettz
 <str>    = <D/T/DT>.isoformat(sep='T')      # Also `timespec='auto/hours/minutes/seconds/…'`.
 <str>    = <D/T/DT>.strftime('<format>')    # Custom string representation of the object.
 <int>    = <D/DT>.toordinal()               # Days since Gregorian NYE 1, ignoring time and tz.
-<float>  = <DTn>.timestamp()                # Seconds since the Epoch, from DTn in local tz.
+<float>  = <DTn>.timestamp()                # Seconds since the Epoch, from local naive DT.
 <float>  = <DTa>.timestamp()                # Seconds since the Epoch, from aware datetime.
 ```
 
@@ -656,12 +655,12 @@ from dateutil.tz import tzlocal, gettz
 ### Arithmetics
 ```python
 <bool>   = <D/T/DTn> > <D/T/DTn>            # Ignores time jumps (fold attribute). Also ==.
-<bool>   = <DTa>     > <DTa>                # Ignores time jumps if they share tzinfo object.
+<bool>   = <DTa>     > <DTa>                # Ignores jumps if they share tz object. Broken ==.
 <TD>     = <D/DTn>   - <D/DTn>              # Ignores jumps. Convert to UTC for actual delta.
-<TD>     = <DTa>     - <DTa>                # Ignores time jumps if they share tzinfo object.
+<TD>     = <DTa>     - <DTa>                # Ignores jumps if they share tzinfo object.
 <D/DT>   = <D/DT>    ± <TD>                 # Returned datetime can fall into missing hour.
 <TD>     = <TD>      * <float>              # Also: <TD> = abs(<TD>) and <TD> = <TD> ±% <TD>.
-<float>  = <TD>      / <TD>                 # How many weeks/years there are in TD. Also //.
+<float>  = <TD>      / <TD>                 # How many hours/weeks/years are in TD. Also //.
 ```
 
 
@@ -740,7 +739,7 @@ def f(x, y, *, z): ...          # f(x=1, y=2, z=3) | f(1, y=2, z=3) | f(1, 2, z=
 <list>  = [*<coll.> [, ...]]    # Or: list(<collection>) [+ ...]
 <tuple> = (*<coll.>, [...])     # Or: tuple(<collection>) [+ ...]
 <set>   = {*<coll.> [, ...]}    # Or: set(<collection>) [| ...]
-<dict>  = {**<dict> [, ...]}    # Or: dict(**<dict> [, ...])
+<dict>  = {**<dict> [, ...]}    # Or: dict(<dict>) [| ...] (since 3.9)
 ```
 
 ```python
@@ -753,7 +752,7 @@ Inline
 ### Lambda
 ```python
 <func> = lambda: <return_value>                     # A single statement function.
-<func> = lambda <arg_1>, <arg_2>: <return_value>    # Also accepts default arguments.
+<func> = lambda <arg_1>, <arg_2>: <return_value>    # Also allows default arguments.
 ```
 
 ### Comprehensions
@@ -765,7 +764,7 @@ Inline
 ```
 
 ```python
->>> [l+r for l in 'abc' for r in 'abc']
+>>> [l+r for l in 'abc' for r in 'abc']             # Inner loop is on the right side.
 ['aa', 'ab', 'ac', ..., 'cc']
 ```
 
@@ -782,13 +781,13 @@ from functools import reduce
 
 ### Any, All
 ```python
-<bool> = any(<collection>)                          # Is `bool(<el>)` True for any element.
-<bool> = all(<collection>)                          # Is True for all elements or empty.
+<bool> = any(<collection>)                          # Is `bool(<el>)` True for any el?
+<bool> = all(<collection>)                          # True for all? Also True if empty.
 ```
 
 ### Conditional Expression
 ```python
-<obj> = <exp> if <condition> else <exp>             # Only one expression gets evaluated.
+<obj> = <exp> if <condition> else <exp>             # Only one expression is evaluated.
 ```
 
 ```python
@@ -915,7 +914,7 @@ def add(x, y):
     return x + y
 ```
 * **Wraps is a helper decorator that copies the metadata of the passed function (func) to the function it is wrapping (out).**
-* **Without it `'add.__name__'` would return `'out'`.**
+* **Without it, `'add.__name__'` would return `'out'`.**
 
 ### LRU Cache
 **Decorator that caches function's return values. All function's arguments must be hashable.**
@@ -1000,13 +999,12 @@ class <name>:
 ### Inheritance
 ```python
 class Person:
-    def __init__(self, name, age):
+    def __init__(self, name):
         self.name = name
-        self.age  = age
 
 class Employee(Person):
-    def __init__(self, name, age, staff_num):
-        super().__init__(name, age)
+    def __init__(self, name, staff_num):
+        super().__init__(name)
         self.staff_num = staff_num
 ```
 
@@ -1458,13 +1456,13 @@ BaseException
       +-- MemoryError             # Out of memory. Could be too late to start deleting vars.
       +-- NameError               # Raised when nonexistent name (variable/func/class) is used.
       |    +-- UnboundLocalError  # Raised when local name is used before it's being defined.
-      +-- OSError                 # Errors such as FileExistsError/PermissionError (see #Open).
+      +-- OSError                 # Errors such as FileExistsError/TimeoutError (see #Open).
       |    +-- ConnectionError    # Errors such as BrokenPipeError/ConnectionAbortedError.
       +-- RuntimeError            # Raised by errors that don't fall into other categories.
-      |    +-- NotImplementedErr  # Can be raised by abstract methods or by unfinished code.
+      |    +-- NotImplementedEr…  # Can be raised by abstract methods or by unfinished code.
       |    +-- RecursionError     # Raised when the maximum recursion depth is exceeded.
-      +-- StopIteration           # Raised by next() when run on an empty iterator.
-      +-- TypeError               # Raised when an argument is of the wrong type.
+      +-- StopIteration           # Raised when an empty iterator is passed to next().
+      +-- TypeError               # When an argument of the wrong type is passed to function.
       +-- ValueError              # When argument has the right type but inappropriate value.
 ```
 
@@ -1484,7 +1482,7 @@ BaseException
 ```python
 raise TypeError('Argument is of the wrong type!')
 raise ValueError('Argument has the right type but an inappropriate value!')
-raise RuntimeError('None of above!')
+raise RuntimeError('I am too lazy to define my own exception!')
 ```
 
 ### User-defined Exceptions
@@ -1511,24 +1509,23 @@ Print
 print(<el_1>, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
 ```
 * **Use `'file=sys.stderr'` for messages about errors.**
-* **Use `'flush=True'` to forcibly flush the stream.**
+* **Stdout and stderr streams hold output in a buffer until they receive a string containing '\n' or '\r', buffer reaches 4096 characters, `'flush=True'` is used, or program exits.**
 
 ### Pretty Print
 ```python
 from pprint import pprint
 pprint(<collection>, width=80, depth=None, compact=False, sort_dicts=True)
 ```
-* **Levels deeper than 'depth' get replaced by '...'.**
+* **Each item is printed on its own line if collection takes up more than 'width' characters.**
+* **Nested collections that are 'depth' levels deep get printed as '...'.**
 
 
 Input
 -----
-**Reads a line from the user input or pipe if present.**
-
 ```python
 <str> = input(prompt=None)
 ```
-* **Trailing newline gets stripped.**
+* **Reads a line from the user input or pipe if present (trailing newline gets stripped).**
 * **Prompt string is printed to the standard output before reading input.**
 * **Raises EOFError when user hits EOF (ctrl-d/ctrl-z⏎) or input stream gets exhausted.**
 
@@ -1544,18 +1541,18 @@ arguments    = sys.argv[1:]
 ### Argument Parser
 ```python
 from argparse import ArgumentParser, FileType
-p = ArgumentParser(description=<str>)
-p.add_argument('-<short_name>', '--<name>', action='store_true')  # Flag.
-p.add_argument('-<short_name>', '--<name>', type=<type>)          # Option.
-p.add_argument('<name>', type=<type>, nargs=1)                    # First argument.
-p.add_argument('<name>', type=<type>, nargs='+')                  # Remaining arguments.
+p = ArgumentParser(description=<str>)                             # Returns a parser.
+p.add_argument('-<short_name>', '--<name>', action='store_true')  # Flag (defaults to False).
+p.add_argument('-<short_name>', '--<name>', type=<type>)          # Option (defaults to None).
+p.add_argument('<name>', type=<type>, nargs=1)                    # Mandatory first argument.
+p.add_argument('<name>', type=<type>, nargs='+')                  # Mandatory remaining args.
 p.add_argument('<name>', type=<type>, nargs='*')                  # Optional arguments.
-args  = p.parse_args()                                            # Exits on error.
-value = args.<name>
+<args> = p.parse_args()                                           # Exits on parsing error.
+<obj>  = <args>.<name>                                            # Returns `<type>(<arg>)`.
 ```
 
 * **Use `'help=<str>'` to set argument description that will be displayed in help message.**
-* **Use `'default=<el>'` to set argument's default value.**
+* **Use `'default=<el>'` to set option's default value.**
 * **Use `'type=FileType(<mode>)'` for files. Accepts 'encoding', but 'newline' is None.**
 
 
@@ -1578,7 +1575,6 @@ Open
 * **`'w+'` - Read and write (truncate).**
 * **`'r+'` - Read and write from the start.**
 * **`'a+'` - Read and write from the end.**
-* **`'t'`  - Text mode (default).**
 * **`'b'`  - Binary mode (`'br'`, `'bw'`, `'bx'`, …).**
 
 ### Exceptions
@@ -1606,6 +1602,7 @@ Open
 <file>.write(<str/bytes>)           # Writes a string or bytes object.
 <file>.writelines(<collection>)     # Writes a coll. of strings or bytes objects.
 <file>.flush()                      # Flushes write buffer. Runs every 4096/8192 B.
+<file>.close()                      # Closes the file after flushing.
 ```
 * **Methods do not add or strip trailing newlines, not even writelines().**
 
@@ -1954,26 +1951,26 @@ Bytes
 **Bytes object is an immutable sequence of single bytes. Mutable version is called bytearray.**
 
 ```python
-<bytes> = b'<str>'                          # Only accepts ASCII characters and \x00-\xff.
-<int>   = <bytes>[<index>]                  # Returns an int in range from 0 to 255.
-<bytes> = <bytes>[<slice>]                  # Returns bytes even if it has only one element.
-<bytes> = <bytes>.join(<coll_of_bytes>)     # Joins elements using bytes as a separator.
+<bytes> = b'<str>'                       # Only accepts ASCII characters and \x00-\xff.
+<int>   = <bytes>[<index>]               # Returns an int in range from 0 to 255.
+<bytes> = <bytes>[<slice>]               # Returns bytes even if it has only one element.
+<bytes> = <bytes>.join(<coll_of_bytes>)  # Joins elements using bytes as a separator.
 ```
 
 ### Encode
 ```python
-<bytes> = bytes(<coll_of_ints>)             # Ints must be in range from 0 to 255.
-<bytes> = bytes(<str>, 'utf-8')             # Or: <str>.encode('utf-8')
-<bytes> = <int>.to_bytes(n_bytes, …)        # `byteorder='big/little', signed=False`.
-<bytes> = bytes.fromhex('<hex>')            # Hex pairs can be separated by whitespaces.
+<bytes> = bytes(<coll_of_ints>)          # Ints must be in range from 0 to 255.
+<bytes> = bytes(<str>, 'utf-8')          # Or: <str>.encode('utf-8')
+<bytes> = <int>.to_bytes(n_bytes, …)     # `byteorder='big/little', signed=False`.
+<bytes> = bytes.fromhex('<hex>')         # Hex pairs can be separated by whitespaces.
 ```
 
 ### Decode
 ```python
-<list>  = list(<bytes>)                     # Returns ints in range from 0 to 255.
-<str>   = str(<bytes>, 'utf-8')             # Or: <bytes>.decode('utf-8')
-<int>   = int.from_bytes(<bytes>, …)        # `byteorder='big/little', signed=False`.
-'<hex>' = <bytes>.hex()                     # Returns hex pairs. Accepts `sep=<str>`.
+<list>  = list(<bytes>)                  # Returns ints in range from 0 to 255.
+<str>   = str(<bytes>, 'utf-8')          # Or: <bytes>.decode('utf-8')
+<int>   = int.from_bytes(<bytes>, …)     # `byteorder='big/little', signed=False`.
+'<hex>' = <bytes>.hex()                  # Returns hex pairs. Accepts `sep=<str>`.
 ```
 
 ### Read Bytes from File
@@ -2012,12 +2009,12 @@ b'\x00\x01\x00\x02\x00\x00\x00\x03'
 ### Format
 #### For standard type sizes and manual alignment (padding) start format string with:
 * **`'='` - System's byte order (usually little-endian).**
-* **`'<'` - Little-endian.**
+* **`'<'` - Little-endian (i.e. least significant byte first).**
 * **`'>'` - Big-endian (also `'!'`).**
 
 #### Besides numbers, pack() and unpack() also support bytes objects as part of the sequence:
 * **`'c'` - A bytes object with a single element. For pad byte use `'x'`.**
-* **`'<n>s'` - A bytes object with n elements.**
+* **`'<n>s'` - A bytes object with n elements (not effected by byte order).**
 
 #### Integer types. Use a capital letter for unsigned type. Minimum and standard sizes are in brackets:
 * **`'b'` - char (1/1)**
@@ -2040,6 +2037,7 @@ from array import array
 <array> = array('<typecode>', <collection>)    # Array from collection of numbers.
 <array> = array('<typecode>', <bytes>)         # Array from bytes object.
 <array> = array('<typecode>', <array>)         # Treats array as a sequence of numbers.
+<array>.fromfile(<file>, n_items)              # Appends items. Raises EOFError on end.
 <bytes> = bytes(<array>)                       # Or: <array>.tobytes()
 <file>.write(<array>)                          # Writes array to the binary file.
 ```
@@ -2152,7 +2150,7 @@ with <lock>:                                   # Enters the block by calling acq
 <bool> = <Future>.cancel()                     # Cancels or returns False if running/finished.
 <iter> = as_completed(<coll_of_Futures>)       # Next() waits for next completed Future.
 ```
-* **Map() and as_completed() also accept 'timeout' argument that causes TimeoutError if result isn't available in 'timeout' seconds after next() is called.**
+* **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called. Map() times from original call and as_completed() from first call to next().**
 * **Exceptions that happen inside threads are raised when next() is called on map's iterator or when result() is called on a Future. Its exception() method returns exception or None.**
 * **ProcessPoolExecutor provides true parallelism, but everything sent to/from workers must be [pickable](#pickle). Queues must be sent using executor's 'initargs' and 'initializer' parameters.**
 
@@ -2183,6 +2181,103 @@ first_element    = op.methodcaller('pop', 0)(<list>)
 * **Also: `'<bool> = <bool> &|^ <bool>'` and `'<int> = <bool> &|^ <int>'`.**
 
 
+Match Statement
+---------------
+**Executes the first block with matching pattern. Added in Python 3.10.**
+
+```python
+match <object/expression>:
+    case <pattern> [if <condition>]:
+        <code>
+    ...
+```
+
+### Patterns
+```python
+<value_pattern> = 1/'abc'/True/None/math.pi          # Matches the literal or a dotted name.
+<class_pattern> = <type>()                           # Matches any object of that type.
+<wildcard_patt> = _                                  # Matches any object.
+<capture_patt>  = <name>                             # Matches any object and binds it to name.
+<or_pattern>    = <pattern> | <pattern> [| ...]      # Matches any of the patterns.
+<as_pattern>    = <pattern> as <name>                # Binds the match to the name.
+<sequence_patt> = [<pattern>, ...]                   # Matches sequence with matching items.
+<mapping_patt>  = {<value_pattern>: <pattern>, ...}  # Matches dictionary with matching items.
+<class_pattern> = <type>(<attr_name>=<patt>, ...)    # Matches object with matching attributes.
+```
+* **Sequence pattern can also be written as a tuple.**
+* **Use `'*<name>'` and `'**<name>'` in sequence/mapping patterns to bind remaining items.**
+* **Sequence pattern must match all items, while mapping pattern does not.**
+* **Patterns can be surrounded with brackets to override precedence (`'|'` > `'as'` > `','`).**
+* **Built-in types allow a single positional pattern that is matched against the entire object.**
+* **All names that are bound in the matching case, as well as variables initialized in its block, are visible after the match statement.**
+
+### Example
+```python
+>>> from pathlib import Path
+>>> match Path('/home/gto/python-cheatsheet/README.md'):
+...     case Path(
+...         parts=['/', 'home', user, *_],
+...         stem=stem,
+...         suffix=('.md' | '.txt') as suffix
+...     ) if stem.lower() == 'readme':
+...         print(f'{stem}{suffix} is a readme file that belongs to user {user}.')
+'README.md is a readme file that belongs to user gto.'
+```
+
+
+Logging
+-------
+```python
+import logging
+```
+
+```python
+logging.basicConfig(filename=<path>, level='DEBUG')  # Configures the root logger (see Setup).
+logging.debug/info/warning/error/critical(<str>)     # Logs to the root logger.
+<Logger> = logging.getLogger(__name__)               # Logger named after the module.
+<Logger>.<level>(<str>)                              # Logs to the logger.
+<Logger>.exception(<str>)                            # Error() that appends caught exception.
+```
+
+### Setup
+```python
+logging.basicConfig(
+    filename=None,                                   # Logs to console (stderr) by default.
+    format='%(levelname)s:%(name)s:%(message)s',     # Add '%(asctime)s' for local datetime.
+    level=logging.WARNING,                           # Drops messages with lower priority.
+    handlers=[logging.StreamHandler(sys.stderr)]     # Uses FileHandler if filename is set.
+)
+```
+
+```python
+<Formatter> = logging.Formatter('<format>')          # Creates a Formatter.
+<Handler> = logging.FileHandler(<path>, mode='a')    # Creates a Handler. Also `encoding=None`.
+<Handler>.setFormatter(<Formatter>)                  # Adds Formatter to the Handler.
+<Handler>.setLevel(<int/str>)                        # Processes all messages by default.
+<Logger>.addHandler(<Handler>)                       # Adds Handler to the Logger.
+<Logger>.setLevel(<int/str>)                         # What is sent to its/ancestor's handlers.
+```
+* **Parent logger can be specified by naming the child logger `'<parent>.<name>'`.**
+* **If logger doesn't have a set level it inherits it from the first ancestor that does.**
+* **Formatter also accepts: pathname, filename, funcName, lineno, thread and process.**
+* **A `'handlers.RotatingFileHandler'` creates and deletes log files based on 'maxBytes' and 'backupCount' arguments.**
+
+#### Creates a logger that writes all messages to file and sends them to the root's handler that prints warnings or higher:
+```python
+>>> logger = logging.getLogger('my_module')
+>>> handler = logging.FileHandler('test.log', encoding='utf-8')
+>>> formatter = logging.Formatter('%(asctime)s %(levelname)s:%(name)s:%(message)s')
+>>> handler.setFormatter(formatter)
+>>> logger.addHandler(handler)
+>>> logging.basicConfig(level='DEBUG')
+>>> logging.root.handlers[0].setLevel('WARNING')
+>>> logger.critical('Running out of disk space.')
+CRITICAL:my_module:Running out of disk space.
+>>> print(open('test.log').read())
+2023-02-07 23:21:01,430 CRITICAL:my_module:Running out of disk space.
+```
+
+
 Introspection
 -------------
 ```python
@@ -2191,7 +2286,6 @@ Introspection
 <dict> = globals()                         # Dict of global vars, etc. (incl. '__builtins__').
 ```
 
-### Attributes
 ```python
 <list> = dir(<object>)                     # Names of object's attributes (including methods).
 <dict> = vars(<object>)                    # Dict of writable attributes. Also <obj>.__dict__.
@@ -2201,7 +2295,6 @@ setattr(<object>, '<attr_name>', value)    # Only works on objects with '__dict_
 delattr(<object>, '<attr_name>')           # Same. Also `del <object>.<attr_name>`.
 ```
 
-### Parameters
 ```python
 <Sig>  = inspect.signature(<function>)     # Function's Signature object.
 <dict> = <Sig>.parameters                  # Dict of Parameter objects.
@@ -2211,125 +2304,41 @@ delattr(<object>, '<attr_name>')           # Same. Also `del <object>.<attr_name
 ```
 
 
-Metaprogramming
----------------
-**Code that generates code.**
-
-### Type
-**Type is the root class. If only passed an object it returns its type (class). Otherwise it creates a new class.**
-
-```python
-<class> = type('<class_name>', <tuple_of_parents>, <dict_of_class_attributes>)
-```
-
-```python
->>> Z = type('Z', (), {'a': 'abcde', 'b': 12345})
->>> z = Z()
-```
-
-### Meta Class
-**A class that creates classes.**
-
-```python
-def my_meta_class(name, parents, attrs):
-    attrs['a'] = 'abcde'
-    return type(name, parents, attrs)
-```
-
-#### Or:
-```python
-class MyMetaClass(type):
-    def __new__(cls, name, parents, attrs):
-        attrs['a'] = 'abcde'
-        return type.__new__(cls, name, parents, attrs)
-```
-* **New() is a class method that gets called before init(). If it returns an instance of its class, then that instance gets passed to init() as a 'self' argument.**
-* **It receives the same arguments as init(), except for the first one that specifies the desired type of the returned instance (MyMetaClass in our case).**
-* **Like in our case, new() can also be called directly, usually from a new() method of a child class (**`def __new__(cls): return super().__new__(cls)`**).**
-* **The only difference between the examples above is that my\_meta\_class() returns a class of type type, while MyMetaClass() returns a class of type MyMetaClass.**
-
-### Metaclass Attribute
-**Right before a class is created it checks if it has the 'metaclass' attribute defined. If not, it recursively checks if any of its parents has it defined and eventually comes to type().**
-
-```python
-class MyClass(metaclass=MyMetaClass):
-    b = 12345
-```
-
-```python
->>> MyClass.a, MyClass.b
-('abcde', 12345)
-```
-
-### Type Diagram
-```python
-type(MyClass) == MyMetaClass         # MyClass is an instance of MyMetaClass.
-type(MyMetaClass) == type            # MyMetaClass is an instance of type.
-```
-
-```text
-+-------------+-------------+
-|   Classes   | Metaclasses |
-+-------------+-------------|
-|   MyClass <-- MyMetaClass |
-|             |     ^       |
-|    object <----- type <+  |
-|             |     | +--+  |
-|     str <---------+       |
-+-------------+-------------+
-```
-
-### Inheritance Diagram
-```python
-MyClass.__base__ == object           # MyClass is a subclass of object.
-MyMetaClass.__base__ == type         # MyMetaClass is a subclass of type.
-```
-
-```text
-+-------------+-------------+
-|   Classes   | Metaclasses |
-+-------------+-------------|
-|   MyClass   | MyMetaClass |
-|      ^      |     ^       |
-|    object -----> type     |
-|      v      |             |
-|     str     |             |
-+-------------+-------------+
-```
-
-
-Eval
-----
-```python
->>> from ast import literal_eval
->>> literal_eval('[1, 2, 3]')
-[1, 2, 3]
->>> literal_eval('1 + 2')
-ValueError: malformed node or string
-```
-
-
 Coroutines
 ----------
 * **Coroutines have a lot in common with threads, but unlike threads, they only give up control when they call another coroutine and they don’t use as much memory.**
 * **Coroutine definition starts with `'async'` and its call with `'await'`.**
 * **`'asyncio.run(<coroutine>)'` is the main entry point for asynchronous programs.**
-* **Functions wait(), gather() and as_completed() start multiple coroutines at the same time.**
-* **Asyncio module also provides its own [Queue](#queue), [Event](#semaphore-event-barrier), [Lock](#lock) and [Semaphore](#semaphore-event-barrier) classes.**
-
-#### Runs a terminal game where you control an asterisk that must avoid numbers:
 
 ```python
-import asyncio, collections, curses, curses.textpad, enum, random
+import asyncio as aio
+```
 
-P = collections.namedtuple('P', 'x y')         # Position
-D = enum.Enum('D', 'n e s w')                  # Direction
-W, H = 15, 7                                   # Width, Height
+```python
+<coro> = <async_func>(<args>)             # Creates a coroutine.
+<obj>  = await <coroutine>                # Starts the coroutine and returns result.
+<task> = aio.create_task(<coroutine>)     # Schedules coroutine for execution.
+<obj>  = await <task>                     # Returns result. Also <task>.cancel().
+```
+
+```python
+<coro> = aio.gather(<coro/task>, ...)     # Schedules coroutines. Returns results when awaited.
+<coro> = aio.wait(<tasks>, …)             # `aio.ALL/FIRST_COMPLETED`. Returns (done, pending).
+<iter> = aio.as_completed(<coros/tasks>)  # Iter of coros. All return next result when awaited.
+```
+
+#### Runs a terminal game where you control an asterisk that must avoid numbers:
+```python
+import asyncio, collections, curses, curses.textpad, enum, random, time
+
+P = collections.namedtuple('P', 'x y')    # Position
+D = enum.Enum('D', 'n e s w')             # Direction
+W, H = 15, 7                              # Width, Height
 
 def main(screen):
-    curses.curs_set(0)                         # Makes cursor invisible.
-    screen.nodelay(True)                       # Makes getch() non-blocking.
-    asyncio.run(main_coroutine(screen))        # Starts running asyncio code.
+    curses.curs_set(0)                    # Makes cursor invisible.
+    screen.nodelay(True)                  # Makes getch() non-blocking.
+    asyncio.run(main_coroutine(screen))   # Starts running asyncio code.
 
 async def main_coroutine(screen):
     moves = asyncio.Queue()
@@ -2355,9 +2364,8 @@ async def human_controller(screen, moves):
 async def model(moves, state):
     while state['*'] not in (state[id_] for id_ in range(10)):
         id_, d = await moves.get()
-        x, y   = state[id_]
         deltas = {D.n: P(0, -1), D.e: P(1, 0), D.s: P(0, 1), D.w: P(-1, 0)}
-        state[id_] = P((x + deltas[d].x) % W, (y + deltas[d].y) % H)
+        state[id_] = P((state[id_].x + deltas[d].x) % W, (state[id_].y + deltas[d].y) % H)
 
 async def view(state, screen):
     offset = P(curses.COLS//2 - W//2, curses.LINES//2 - H//2)
@@ -2395,6 +2403,7 @@ Plot
 ```python
 # $ pip3 install matplotlib
 import matplotlib.pyplot as plt
+
 plt.plot/bar/scatter(x_data, y_data [, label=<str>])  # Or: plt.plot(y_data)
 plt.legend()                                          # Adds a legend.
 plt.savefig(<path>)                                   # Saves the figure.
@@ -2405,15 +2414,13 @@ plt.clf()                                             # Clears the figure.
 
 Table
 -----
-#### Prints a CSV file as an ASCII table:
+#### Prints a CSV spreadsheet to the console:
 ```python
 # $ pip3 install tabulate
 import csv, tabulate
 with open('test.csv', encoding='utf-8', newline='') as file:
-    rows   = csv.reader(file)
-    header = next(rows)
-    table  = tabulate.tabulate(rows, header)
-print(table)
+    rows = list(csv.reader(file))
+print(tabulate.tabulate(rows, headers='firstrow'))
 ```
 
 
@@ -2421,7 +2428,7 @@ Curses
 ------
 #### Runs a basic file explorer in the console:
 ```python
-# pip3 install windows-curses
+# $ pip3 install windows-curses
 import curses, os
 from curses import A_REVERSE, KEY_DOWN, KEY_UP, KEY_LEFT, KEY_RIGHT, KEY_ENTER
 
@@ -2448,57 +2455,33 @@ if __name__ == '__main__':
 ```
 
 
-Logging
--------
-```python
-import logging
-```
+PySimpleGUI
+-----------
+#### A weight converter GUI application:
 
 ```python
-logging.basicConfig(filename=<path>, level='DEBUG')  # Configures the root logger (see Setup).
-logging.debug/info/warning/error/critical(<str>)     # Logs to the root logger.
-<Logger> = logging.getLogger(__name__)               # Logger named after the module.
-<Logger>.<level>(<str>)                              # Logs to the logger.
-<Logger>.exception(<str>)                            # Calls error() with caught exception.
-```
+# $ pip3 install PySimpleGUI
+import PySimpleGUI as sg
 
-### Setup
-```python
-logging.basicConfig(
-    filename=None,                                   # Logs to console (stderr) by default.
-    format='%(levelname)s:%(name)s:%(message)s',     # Add `%(asctime)s` for local datetime.
-    level=logging.WARNING,                           # Drops messages with lower priority.
-    handlers=[logging.StreamHandler()]               # Uses FileHandler if filename is set.
-)
-```
+text_box = sg.Input(default_text='100', enable_events=True, key='-VALUE-')
+dropdown = sg.InputCombo(['g', 'kg', 't'], 'kg', readonly=True, enable_events=True, k='-UNIT-')
+label    = sg.Text('100 kg is 220.462 lbs.', key='-OUTPUT-')
+button   = sg.Button('Close')
+window   = sg.Window('Weight Converter', [[text_box, dropdown], [label], [button]])
 
-```python
-<Formatter> = logging.Formatter('<format>')          # Creates a Formatter.
-<Handler> = logging.FileHandler(<path>)              # Creates a Handler.
-<Handler>.setFormatter(<Formatter>)                  # Adds Formatter to the Handler.
-<Handler>.setLevel(<int/str>)                        # Processes all messages by default.
-<Logger>.addHandler(<Handler>)                       # Adds Handler to the Logger.
-<Logger>.setLevel(<int/str>)                         # What is sent to its/ancestor's handlers.
-```
-* **Parent logger can be specified by naming the child logger `'<parent>.<name>'`.**
-* **If logger doesn't have a set level it inherits it from the first ancestor that does.**
-* **Formatter also accepts: pathname, filename, funcName, lineno, thread and process.**
-* **A `'handlers.RotatingFileHandler'` creates and deletes log files based on 'maxBytes' and 'backupCount' arguments.**
-
-
-#### Creates a logger that writes all messages to file and sends them to the root's handler that prints warnings or higher:
-```python
->>> logger = logging.getLogger('my_module')
->>> handler = logging.FileHandler('test.log')
->>> formatter = logging.Formatter('%(asctime)s %(levelname)s:%(name)s:%(message)s')
->>> logger.addHandler(handler)
->>> handler.setFormatter(formatter)
->>> logging.basicConfig(level='DEBUG')
->>> logging.root.handlers[0].setLevel('WARNING')
->>> logger.critical('Running out of disk space.')
-CRITICAL:my_module:Running out of disk space.
->>> print(open('test.log').read())
-2023-02-07 23:21:01,430 CRITICAL:my_module:Running out of disk space.
+while True:
+    event, values = window.read()
+    if event in [sg.WIN_CLOSED, 'Close']:
+        break
+    try:
+        value = float(values['-VALUE-'])
+    except ValueError:
+        continue
+    unit = values['-UNIT-']
+    factors = {'g': 0.001, 'kg': 1, 't': 1000}
+    lbs = value * factors[unit] / 0.45359237
+    window['-OUTPUT-'].update(value=f'{value} {unit} is {lbs:g} lbs.')
+window.close()
 ```
 
 
@@ -2507,21 +2490,43 @@ Scraping
 #### Scrapes Python's URL and logo from its Wikipedia page:
 ```python
 # $ pip3 install requests beautifulsoup4
-import requests, bs4, os, sys
+import requests, bs4, os
 
-try:
-    response   = requests.get('https://en.wikipedia.org/wiki/Python_(programming_language)')
-    document   = bs4.BeautifulSoup(response.text, 'html.parser')
-    table      = document.find('table', class_='infobox vevent')
-    python_url = table.find('th', text='Website').next_sibling.a['href']
-    logo_url   = table.find('img')['src']
-    logo       = requests.get(f'https:{logo_url}').content
-    filename   = os.path.basename(logo_url)
-    with open(filename, 'wb') as file:
-        file.write(logo)
-    print(f'{python_url}, file://{os.path.abspath(filename)}')
-except requests.exceptions.ConnectionError:
-    print("You've got problems with connection.", file=sys.stderr)
+response   = requests.get('https://en.wikipedia.org/wiki/Python_(programming_language)')
+document   = bs4.BeautifulSoup(response.text, 'html.parser')
+table      = document.find('table', class_='infobox vevent')
+python_url = table.find('th', text='Website').next_sibling.a['href']
+logo_url   = table.find('img')['src']
+logo       = requests.get(f'https:{logo_url}').content
+filename   = os.path.basename(logo_url)
+with open(filename, 'wb') as file:
+    file.write(logo)
+print(f'{python_url}, file://{os.path.abspath(filename)}')
+```
+
+### Selenium
+**Library for scraping websites with dynamic content.**
+```python
+# $ pip3 install selenium
+from selenium import webdriver
+
+<Drv> = webdriver.Chrome/Firefox/Safari/Edge()         # Opens the browser. Also <Drv>.quit().
+<Drv>.get('<url>')                                     # Also <Drv>.implicitly_wait(seconds).
+<El> = <Drv/El>.find_element('css selector', '<css>')  # '<tag>#<id>.<class>[<attr>="<val>"]'.
+<list> = <Drv/El>.find_elements('xpath', '<xpath>')    # '//<tag>[@<attr>="<val>"]'.
+<str> = <El>.get_attribute/get_property(<str>)         # Also <El>.text/tag_name.
+<El>.click/clear()                                     # Also <El>.send_keys(<str>).
+```
+
+#### XPath — also available in browser's console via `'$x(<xpath>)'` and by lxml library:
+```python
+<xpath>     = //<element>[/ or // <element>]           # Child: /, Descendant: //, Parent: /..
+<xpath>     = //<element>/following::<element>         # Next sibling. Also preceding/parent/…
+<element>   = <tag><conditions><index>                 # `<tag> = */a/…`, `<index> = [1/2/…]`.
+<condition> = [<sub_cond> [and/or <sub_cond>]]         # For negation use `not(<sub_cond>)`.
+<sub_cond>  = @<attr>="<val>"                          # `.="<val>"` matches complete text.
+<sub_cond>  = contains(@<attr>, "<val>")               # Is <val> a substring of attr's value?
+<sub_cond>  = [//]<element>                            # Has matching child? Descendant if //.
 ```
 
 
@@ -2606,34 +2611,34 @@ def main():
     b = set(range(10000))
 main()' > test.py
 $ kernprof -lv test.py
-Line #   Hits     Time  Per Hit   % Time  Line Contents
-=======================================================
-     1                                    @profile
-     2                                    def main():
-     3      1    219.0    219.0     31.1      a = list(range(10000))
-     4      1    487.0    487.0     68.9      b = set(range(10000))
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     1                                           @profile
+     2                                           def main():
+     3         1        253.4    253.4     32.2      a = list(range(10000))
+     4         1        534.1    534.1     67.8      b = set(range(10000))
 ```
 
 ### Call and Flame Graphs
 ```text
-$ pip3 install gprof2dot snakeviz; apt/brew install graphviz
-$ tail -n 4 test.py > test.py
+$ apt/brew install graphviz && pip3 install gprof2dot snakeviz
+$ tail --lines=4 test.py > test.py
 $ python3 -m cProfile -o test.prof test.py
-$ gprof2dot -f pstats test.prof | dot -T png -o test.png; xdg-open/open test.png
+$ gprof2dot --format=pstats test.prof | dot -T png -o test.png
+$ xdg-open/open test.png
 $ snakeviz test.prof
 ```
 
 ### Sampling and Memory Profilers
 ```text
-+--------------+-------------------------------+------------+----------+------+
-| pip3 install |          How to run           |   Target   |   Type   | Live |
-+--------------+-------------------------------+------------+----------+------+
-| py-spy       | py-spy top -- python3 test.py |    CPU     | Sampling | Yes  |
-| pyinstrument | pyinstrument test.py          |    CPU     | Sampling | No   |
-| scalene      | scalene test.py               | CPU+Memory | Sampling | No   |
-| memray       | memray run --live test.py     |   Memory   | Tracing  | Yes  |
-| filprofiler  | fil-profile run test.py       |   Memory   | Tracing  | No   |
-+--------------+-------------------------------+------------+----------+------+
++--------------+----------+------------+-------------------------------+------+
+| pip3 install |   Type   |   Target   |          How to run           | Live |
++--------------+----------+------------+-------------------------------+------+
+| pyinstrument | Sampling |    CPU     | pyinstrument test.py          | No   |
+| py-spy       | Sampling |    CPU     | py-spy top -- python3 test.py | Yes  |
+| scalene      | Sampling | CPU+Memory | scalene test.py               | No   |
+| memray       | Tracing  |   Memory   | memray run --live test.py     | Yes  |
++--------------+----------+------------+-------------------------------+------+
 ```
 
 
@@ -2668,10 +2673,10 @@ import numpy as np
 ```python
 <array> = np.concatenate(<list_of_arrays>, axis=0)      # Links arrays along first axis (rows).
 <array> = np.row_stack/column_stack(<list_of_arrays>)   # Treats 1d arrays as rows or columns.
-<array> = np.tile/repeat(<array>, <int/list>)           # Tiles array or repeats its elements.
+<array> = np.tile/repeat(<array>, <int/list> [, axis])  # Tiles array or repeats its elements.
 ```
 * **Shape is a tuple of dimension sizes. A 100x50 RGB image has shape (50, 100, 3).**
-* **Axis is an index of the dimension that gets aggregated. Leftmost dimension has index 0. Summing the RGB image along axis 2 will return a greyscale image with shape (50, 100).**
+* **Axis is an index of a dimension. Leftmost dimension has index 0. Summing the RGB image along axis 2 will return a greyscale image with shape (50, 100).**
 
 ### Indexing
 ```perl
@@ -2752,33 +2757,33 @@ Image
 -----
 ```python
 # $ pip3 install pillow
-from PIL import Image, ImageFilter, ImageEnhance
+from PIL import Image
 ```
 
 ```python
-<Image> = Image.new('<mode>', (width, height))    # Also `color=<int/tuple/str>`.
-<Image> = Image.open(<path>)                      # Identifies format based on file contents.
-<Image> = <Image>.convert('<mode>')               # Converts image to the new mode.
-<Image>.save(<path>)                              # Selects format based on the path extension.
-<Image>.show()                                    # Opens image in the default preview app.
+<Image> = Image.new('<mode>', (width, height))  # Also `color=<int/tuple/str>`.
+<Image> = Image.open(<path>)                    # Identifies format based on file contents.
+<Image> = <Image>.convert('<mode>')             # Converts image to the new mode.
+<Image>.save(<path>)                            # Selects format based on the path extension.
+<Image>.show()                                  # Opens image in the default preview app.
 ```
 
 ```python
-<int/tuple> = <Image>.getpixel((x, y))            # Returns pixel's color.
-<Image>.putpixel((x, y), <int/tuple>)             # Changes pixel's color.
-<ImagingCore> = <Image>.getdata()                 # Returns a flattened view of all pixels.
-<Image>.putdata(<list/ImagingCore>)               # Updates pixels with a copy of the sequence.
-<Image>.paste(<Image>, (x, y))                    # Draws passed image at specified location.
+<int/tuple> = <Image>.getpixel((x, y))          # Returns pixel's value (its color).
+<Image>.putpixel((x, y), <int/tuple>)           # Updates pixel's value.
+<ImagingCore> = <Image>.getdata()               # Returns a flattened view of pixel values.
+<Image>.putdata(<list/ImagingCore>)             # Updates pixels with a copy of the sequence.
+<Image>.paste(<Image>, (x, y))                  # Draws passed image at specified location.
 ```
 
 ```python
-<Image> = <Image>.filter(<Filter>)                # `<Filter> = ImageFilter.<name>([<args>])`
-<Image> = <Enhance>.enhance(<float>)              # `<Enhance> = ImageEnhance.<name>(<Image>)`
+<Image> = <Image>.filter(<Filter>)              # `<Filter> = ImageFilter.<name>([<args>])`
+<Image> = <Enhance>.enhance(<float>)            # `<Enhance> = ImageEnhance.<name>(<Image>)`
 ```
 
 ```python
-<array> = np.array(<Image>)                       # Creates a NumPy array from the image.
-<Image> = Image.fromarray(np.uint8(<array>))      # Use <array>.clip(0, 255) to clip values.
+<array> = np.array(<Image>)                     # Creates a 2d/3d NumPy array from the image.
+<Image> = Image.fromarray(np.uint8(<array>))    # Use `<array>.clip(0, 255)` to clip values.
 ```
 
 ### Modes
@@ -2809,15 +2814,15 @@ img.show()
 
 ### Image Draw
 ```python
-from PIL import ImageDraw, ImageFont
-<ImageDraw> = ImageDraw.Draw(<Image>)             # Object for adding 2D graphics to the image.
-<ImageDraw>.point((x, y))                         # Draws a point. Truncates floats into ints.
-<ImageDraw>.line((x1, y1, x2, y2 [, ...]))        # To get anti-aliasing use Image's resize().
-<ImageDraw>.arc((x1, y1, x2, y2), deg1, deg2)     # Always draws in clockwise direction.
-<ImageDraw>.rectangle((x1, y1, x2, y2))           # To rotate use Image's rotate() and paste().
-<ImageDraw>.polygon((x1, y1, x2, y2, ...))        # Last point gets connected to the first.
-<ImageDraw>.ellipse((x1, y1, x2, y2))             # To rotate use Image's rotate() and paste().
-<ImageDraw>.text((x, y), text, font=<Font>)       # `<Font> = ImageFont.truetype(<path>, size)`
+from PIL import ImageDraw
+<ImageDraw> = ImageDraw.Draw(<Image>)           # Object for adding 2D graphics to the image.
+<ImageDraw>.point((x, y))                       # Draws a point. Truncates floats into ints.
+<ImageDraw>.line((x1, y1, x2, y2 [, ...]))      # To get anti-aliasing use Image's resize().
+<ImageDraw>.arc((x1, y1, x2, y2), deg1, deg2)   # Always draws in clockwise direction.
+<ImageDraw>.rectangle((x1, y1, x2, y2))         # To rotate use Image's rotate() and paste().
+<ImageDraw>.polygon((x1, y1, x2, y2, ...))      # Last point gets connected to the first.
+<ImageDraw>.ellipse((x1, y1, x2, y2))           # To rotate use Image's rotate() and paste().
+<ImageDraw>.text((x, y), <str>, font=<Font>)    # `<Font> = ImageFont.truetype(<path>, size)`
 ```
 * **Use `'fill=<color>'` to set the primary color.**
 * **Use `'width=<int>'` to set the width of lines or contours.**
@@ -2853,22 +2858,21 @@ import wave
 ```
 
 ```python
-<Wave_read>  = wave.open('<path>', 'rb')        # Opens the WAV file.
-framerate    = <Wave_read>.getframerate()       # Number of frames per second.
-nchannels    = <Wave_read>.getnchannels()       # Number of samples per frame.
-sampwidth    = <Wave_read>.getsampwidth()       # Sample size in bytes.
-nframes      = <Wave_read>.getnframes()         # Number of frames.
-<params>     = <Wave_read>.getparams()          # Immutable collection of above.
-<bytes>      = <Wave_read>.readframes(nframes)  # Returns next 'nframes' frames.
+<Wave>  = wave.open('<path>', 'rb')   # Opens the WAV file.
+<int>   = <Wave>.getframerate()       # Returns number of frames per second.
+<int>   = <Wave>.getnchannels()       # Returns number of samples per frame.
+<int>   = <Wave>.getsampwidth()       # Returns number of bytes per sample.
+<tuple> = <Wave>.getparams()          # Returns namedtuple of all parameters.
+<bytes> = <Wave>.readframes(nframes)  # Returns next n frames. All if -1.
 ```
 
 ```python
-<Wave_write> = wave.open('<path>', 'wb')        # Truncates existing file.
-<Wave_write>.setframerate(<int>)                # 44100 for CD, 48000 for video.
-<Wave_write>.setnchannels(<int>)                # 1 for mono, 2 for stereo.
-<Wave_write>.setsampwidth(<int>)                # 2 for CD quality sound.
-<Wave_write>.setparams(<params>)                # Sets all parameters.
-<Wave_write>.writeframes(<bytes>)               # Appends frames to the file.
+<Wave> = wave.open('<path>', 'wb')    # Creates/truncates a file for writing.
+<Wave>.setframerate(<int>)            # Pass 44100 for CD, 48000 for video.
+<Wave>.setnchannels(<int>)            # Pass 1 for mono, 2 for stereo.
+<Wave>.setsampwidth(<int>)            # Pass 2 for CD, 3 for hi-res sound.
+<Wave>.setparams(<tuple>)             # Sets all parameters.
+<Wave>.writeframes(<bytes>)           # Appends frames to the file.
 ```
 * **Bytes object contains a sequence of frames, each consisting of one or more samples.**
 * **In a stereo signal, the first sample of a frame belongs to the left channel.**
@@ -2959,15 +2963,15 @@ Synthesizer
 import array, itertools as it, math, simpleaudio
 
 F  = 44100
-P1 = '71♩,69♪,,71♩,66♪,,62♩,66♪,,59♩,,'
-P2 = '71♩,73♪,,74♩,73♪,,74♪,,71♪,,73♩,71♪,,73♪,,69♪,,71♩,69♪,,71♪,,67♪,,71♩,,'
+P1 = '71♩,69♪,,71♩,66♪,,62♩,66♪,,59♩,,,71♩,69♪,,71♩,66♪,,62♩,66♪,,59♩,,,'
+P2 = '71♩,73♪,,74♩,73♪,,74♪,,71♪,,73♩,71♪,,73♪,,69♪,,71♩,69♪,,71♪,,67♪,,71♩,,,'
 get_pause   = lambda seconds: it.repeat(0, int(seconds * F))
 sin_f       = lambda i, hz: math.sin(i * 2 * math.pi * hz / F)
 get_wave    = lambda hz, seconds: (sin_f(i, hz) for i in range(int(seconds * F)))
-get_hz      = lambda key: 8.176 * 2 ** (int(key) / 12)
-parse_note  = lambda note: (get_hz(note[:2]), 1/4 if '♩' in note else 1/8)
-get_samples = lambda note: get_wave(*parse_note(note)) if note else get_pause(1/8)
-samples_f   = it.chain.from_iterable(get_samples(n) for n in f'{P1},{P1},{P2}'.split(','))
+get_hz      = lambda note: 8.176 * 2 ** (int(note[:2]) / 12)
+get_sec     = lambda note: 1/4 if '♩' in note else 1/8
+get_samples = lambda note: get_wave(get_hz(note), get_sec(note)) if note else get_pause(1/8)
+samples_f   = it.chain.from_iterable(get_samples(n) for n in (P1+P2).split(','))
 samples_i   = array.array('h', (int(f * 30000) for f in samples_f))
 simpleaudio.play_buffer(samples_i, 1, 2, F).wait_done()
 ```
@@ -3003,7 +3007,7 @@ while not pg.event.get(pg.QUIT):
 
 ```python
 <bool> = <Rect>.collidepoint((x, y))            # Checks if rectangle contains the point.
-<bool> = <Rect>.colliderect(<Rect>)             # Checks if two rectangles overlap.
+<bool> = <Rect>.colliderect(<Rect>)             # Checks if the two rectangles overlap.
 <int>  = <Rect>.collidelist(<list_of_Rect>)     # Returns index of first colliding Rect or -1.
 <list> = <Rect>.collidelistall(<list_of_Rect>)  # Returns indexes of all colliding rectangles.
 ```
@@ -3021,7 +3025,7 @@ while not pg.event.get(pg.QUIT):
 ```python
 <Surf>.fill(color)                              # Tuple, Color('#rrggbb[aa]') or Color(<name>).
 <Surf>.set_at((x, y), color)                    # Updates pixel. Also <Surf>.get_at((x, y)).
-<Surf>.blit(<Surf>, (x, y))                     # Draws passed surface to the surface.
+<Surf>.blit(<Surf>, (x, y))                     # Draws passed surface at specified location.
 ```
 
 ```python
@@ -3047,7 +3051,7 @@ rect(<Surf>, color, <Rect>, width=0)            # Also polygon(<Surf>, color, po
 ### Sound
 ```python
 <Sound> = pg.mixer.Sound(<path/file/bytes>)     # WAV file or bytes/array of signed shorts.
-<Sound>.play/stop()                             # Also <Sound>.set_volume(<float>).
+<Sound>.play/stop()                             # Also set_volume(<float>), fadeout(msec).
 ```
 
 ### Basic Mario Brothers Example
@@ -3182,7 +3186,7 @@ plt.show()                                     # Displays the plot. Also plt.sav
 #### Series — Aggregate, Transform, Map:
 ```python
 <el> = <Sr>.sum/max/mean/idxmax/all()          # Or: <Sr>.agg(lambda <Sr>: <el>)
-<Sr> = <Sr>.rank/diff/cumsum/ffill/interpl()   # Or: <Sr>.agg/transform(lambda <Sr>: <Sr>)
+<Sr> = <Sr>.rank/diff/cumsum/ffill/interplt()  # Or: <Sr>.agg/transform(lambda <Sr>: <Sr>)
 <Sr> = <Sr>.fillna(<el>)                       # Or: <Sr>.agg/transform/map(lambda <el>: <el>)
 ```
 
@@ -3301,7 +3305,7 @@ c  6  7
 #### DataFrame — Aggregate, Transform, Map:
 ```python
 <Sr> = <DF>.sum/max/mean/idxmax/all()          # Or: <DF>.apply/agg(lambda <Sr>: <el>)
-<DF> = <DF>.rank/diff/cumsum/ffill/interpl()   # Or: <DF>.apply/agg/transfrm(lambda <Sr>: <Sr>)
+<DF> = <DF>.rank/diff/cumsum/ffill/interplt()  # Or: <DF>.apply/agg/transfrm(lambda <Sr>: <Sr>)
 <DF> = <DF>.fillna(<el>)                       # Or: <DF>.applymap(lambda <el>: <el>)
 ```
 * **All operations operate on columns by default. Pass `'axis=1'` to process the rows instead.**
@@ -3342,7 +3346,7 @@ plt.show()                                     # Displays the plot. Also plt.sav
 
 ```python
 <DF> = pd.read_json/html('<str/path/url>')     # Run `$ pip3 install beautifulsoup4 lxml`.
-<DF> = pd.read_csv('<path/url>')               # Also `names=<list>, parse_dates=False`.
+<DF> = pd.read_csv('<path/url>')               # `header/index_col/dtype/parse_dates=<obj>`.
 <DF> = pd.read_pickle/excel('<path/url>')      # Use `sheet_name=None` to get all Excel sheets.
 <DF> = pd.read_sql('<table/query>', <conn.>)   # SQLite3/SQLAlchemy connection (see #SQLite).
 ```
@@ -3369,7 +3373,7 @@ c  7  8  6
 <GB> = <DF>.groupby(column_key/s)              # Splits DF into groups based on passed column.
 <DF> = <GB>.apply(<func>)                      # Maps each group. Func can return DF, Sr or el.
 <GB> = <GB>[column_key]                        # Single column GB. All operations return a Sr.
-<Sr> = <GB>.size()                             # A Sr of group sizes. Keys are group "names".
+<Sr> = <GB>.size()                             # A Sr of group sizes. Same keys as get_group().
 ```
 
 #### GroupBy — Aggregate, Transform, Map:
@@ -3428,7 +3432,7 @@ import pandas as pd, plotly.express as ex
 #### Displays a line chart of total coronavirus deaths per million grouped by continent:
 
 ![Covid Deaths](web/covid_deaths.png)
-<div id="2a950764-39fc-416d-97fe-0a6226a3095f" class="plotly-graph-div" style="height:321px; width:100%;"></div>
+<div id="2a950764-39fc-416d-97fe-0a6226a3095f" class="plotly-graph-div" style="height:312px; width:914px;"></div>
 
 ```python
 covid = pd.read_csv('https://covid.ourworldindata.org/data/owid-covid-data.csv',
@@ -3447,25 +3451,26 @@ ex.line(df, x='Date', y='Total Deaths per Million', color='Continent').show()
 #### Displays a multi-axis line chart of total coronavirus cases and changes in prices of Bitcoin, Dow Jones and gold:
 
 ![Covid Cases](web/covid_cases.png)
-<div id="e23ccacc-a456-478b-b467-7282a2165921" class="plotly-graph-div" style="height:315px; width:100%;"></div>
+<div id="e23ccacc-a456-478b-b467-7282a2165921" class="plotly-graph-div" style="height:287px; width:935px;"></div>
 
 ```python
 import pandas as pd, plotly.graph_objects as go
 
 def main():
-    display_data(wrangle_data(*scrape_data()))
+    covid, bitcoin, gold, dow = scrape_data()
+    display_data(wrangle_data(covid, bitcoin, gold, dow))
 
 def scrape_data():
-    def scrape_covid():
+    def get_covid_cases():
         url = 'https://covid.ourworldindata.org/data/owid-covid-data.csv'
         df = pd.read_csv(url, usecols=['location', 'date', 'total_cases'])
         return df[df.location == 'World'].set_index('date').total_cases
-    def scrape_yahoo(slug):
-        url = (f'https://query1.finance.yahoo.com/v7/finance/download/{slug}?'
+    def get_ticker(symbol):
+        url = (f'https://query1.finance.yahoo.com/v7/finance/download/{symbol}?'
                'period1=1579651200&period2=9999999999&interval=1d&events=history')
         df = pd.read_csv(url, usecols=['Date', 'Close'])
         return df.set_index('Date').Close
-    out = scrape_covid(), scrape_yahoo('BTC-USD'), scrape_yahoo('GC=F'), scrape_yahoo('^DJI')
+    out = get_covid_cases(), get_ticker('BTC-USD'), get_ticker('GC=F'), get_ticker('^DJI')
     return map(pd.Series.rename, out, ['Total Cases', 'Bitcoin', 'Gold', 'Dow Jones'])
 
 def wrangle_data(covid, bitcoin, gold, dow):
@@ -3485,26 +3490,14 @@ def display_data(df):
     figure.update_layout(
         yaxis1=dict(title='Total Cases', rangemode='tozero'),
         yaxis2=dict(title='%', rangemode='tozero', overlaying='y', side='right'),
-        legend=dict(x=1.1),
-        height=450
+        legend=dict(x=1.08),
+        width=944,
+        height=423
     )
     figure.show()
 
 if __name__ == '__main__':
     main()
-```
-
-
-PySimpleGUI
------------
-```python
-# $ pip3 install PySimpleGUI
-import PySimpleGUI as sg
-
-layout = [[sg.Text("What's your name?")], [sg.Input()], [sg.Button('Ok')]]
-window = sg.Window('Window Title', layout)
-event, values = window.read()
-print(f'Hello {values[0]}!' if event == 'Ok' else '')
 ```
 
 
