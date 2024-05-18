@@ -29,6 +29,7 @@ if __name__ == '__main__':      # Runs main() if file wasn't imported.
 List
 ----
 ```python
+<el>   = <list>[index]          # First index is 0. Last -1. Allows assignments.
 <list> = <list>[<slice>]        # Or: <list>[from_inclusive : to_exclusive : ±step]
 ```
 
@@ -57,10 +58,11 @@ list_of_chars    = list(<str>)
 * **Module [operator](#operator) provides functions itemgetter() and mul() that offer the same functionality as [lambda](#lambda) expressions above.**
 
 ```python
-<list>.insert(<int>, <el>)      # Inserts item at index and moves the rest to the right.
-<el>  = <list>.pop([<int>])     # Removes and returns item at index or from the end.
-<int> = <list>.count(<el>)      # Returns number of occurrences. Also works on strings.
+<int> = len(<list>)             # Returns number of items. Also works on other collections.
+<int> = <list>.count(<el>)      # Returns number of occurrences. Also `if <el> in <coll>: ...`.
 <int> = <list>.index(<el>)      # Returns index of the first occurrence or raises ValueError.
+<el>  = <list>.pop()            # Removes and returns item from the end or at index if passed.
+<list>.insert(<int>, <el>)      # Inserts item at index and moves the rest to the right.
 <list>.remove(<el>)             # Removes first occurrence of the item or raises ValueError.
 <list>.clear()                  # Removes all items. Also works on dictionary and set.
 ```
@@ -351,36 +353,35 @@ Regex
 
 ```python
 import re
-<str>   = re.sub(<regex>, new, text, count=0)  # Substitutes all occurrences with 'new'.
-<list>  = re.findall(<regex>, text)            # Returns all occurrences as strings.
-<list>  = re.split(<regex>, text, maxsplit=0)  # Add brackets around regex to include matches.
-<Match> = re.search(<regex>, text)             # First occurrence of the pattern or None.
-<Match> = re.match(<regex>, text)              # Searches only at the beginning of the text.
-<iter>  = re.finditer(<regex>, text)           # Returns all occurrences as Match objects.
+<str>   = re.sub(r'<regex>', new, text, count=0)  # Substitutes all occurrences with 'new'.
+<list>  = re.findall(r'<regex>', text)            # Returns all occurrences as strings.
+<list>  = re.split(r'<regex>', text, maxsplit=0)  # Add brackets around regex to keep matches.
+<Match> = re.search(r'<regex>', text)             # First occurrence of the pattern or None.
+<Match> = re.match(r'<regex>', text)              # Searches only at the beginning of the text.
+<iter>  = re.finditer(r'<regex>', text)           # Returns all occurrences as Match objects.
 ```
 
-* **Argument 'new' can be a function that accepts a Match object and returns a string.**
+* **Raw string literals do not interpret escape sequences, thus enabling us to use regex-specific escape sequences that cause SyntaxWarning in normal string literals (since 3.12).**
+* **Argument 'new' of re.sub() can be a function that accepts Match object and returns a str.**
 * **Argument `'flags=re.IGNORECASE'` can be used with all functions.**
 * **Argument `'flags=re.MULTILINE'` makes `'^'` and `'$'` match the start/end of each line.**
 * **Argument `'flags=re.DOTALL'` makes `'.'` also accept the `'\n'`.**
-* **Use `r'\1'` or `'\\1'` for backreference (`'\1'` returns a character with octal code 1).**
-* **Add `'?'` after `'*'` and `'+'` to make them non-greedy.**
 * **`'re.compile(<regex>)'` returns a Pattern object with methods sub(), findall(), …**
 
 ### Match Object
 ```python
-<str>   = <Match>.group()                      # Returns the whole match. Also group(0).
-<str>   = <Match>.group(1)                     # Returns part inside the first brackets.
-<tuple> = <Match>.groups()                     # Returns all bracketed parts.
-<int>   = <Match>.start()                      # Returns start index of the match.
-<int>   = <Match>.end()                        # Returns exclusive end index of the match.
+<str>   = <Match>.group()                         # Returns the whole match. Also group(0).
+<str>   = <Match>.group(1)                        # Returns part inside the first brackets.
+<tuple> = <Match>.groups()                        # Returns all bracketed parts.
+<int>   = <Match>.start()                         # Returns start index of the match.
+<int>   = <Match>.end()                           # Returns exclusive end index of the match.
 ```
 
 ### Special Sequences
 ```python
-'\d' == '[0-9]'                                # Also [०-९…]. Matches a decimal character.
-'\w' == '[a-zA-Z0-9_]'                         # Also [ª²³…]. Matches an alphanumeric or _.
-'\s' == '[ \t\n\r\f\v]'                        # Also [\x1c-\x1f…]. Matches a whitespace.
+'\d' == '[0-9]'                                   # Also [०-९…]. Matches a decimal character.
+'\w' == '[a-zA-Z0-9_]'                            # Also [ª²³…]. Matches an alphanumeric or _.
+'\s' == '[ \t\n\r\f\v]'                           # Also [\x1c-\x1f…]. Matches a whitespace.
 ```
 
 * **By default, decimal characters, alphanumerics and whitespaces from all alphabets are matched unless `'flags=re.ASCII'` argument is used.**
@@ -478,9 +479,9 @@ Format
 
 ### Ints
 ```python
-{90:c}                                   # 'Z'
-{90:b}                                   # '1011010'
-{90:X}                                   # '5A'
+{90:c}                                   # 'Z'. Unicode character with value 90.
+{90:b}                                   # '1011010'. Number 90 in binary.
+{90:X}                                   # '5A'. Number 90 in uppercase hexadecimal.
 ```
 
 
@@ -500,7 +501,7 @@ Numbers
 
 ### Basic Functions
 ```python
-<num> = pow(<num>, <num>)                         # Or: <num> ** <num>
+<num> = pow(<num>, <num>)                         # Or: <number> ** <number>
 <num> = abs(<num>)                                # <float> = abs(<complex>)
 <num> = round(<num> [, ±ndigits])                 # `round(126, -1) == 130`
 ```
@@ -606,8 +607,8 @@ from dateutil.tz import tzlocal, gettz
 
 ### Now
 ```python
-<D/DTn>  = D/DT.today()                     # Current local date or naive DT. Also DT.now().
-<DTa>    = DT.now(<tzinfo>)                 # Aware DT from current time in passed timezone.
+<D/DTn> = D/DT.today()                      # Current local date or naive DT. Also DT.now().
+<DTa>   = DT.now(<tzinfo>)                  # Aware DT from current time in passed timezone.
 ```
 * **To extract time use `'<DTn>.time()'`, `'<DTa>.time()'` or `'<DTa>.timetz()'`.**
 
@@ -817,6 +818,8 @@ player = Player(point, direction)                   # Returns its instance.
 
 Imports
 -------
+**Mechanism that makes code in one file available to another file.**
+
 ```python
 import <module>            # Imports a built-in or '<module>.py'.
 import <package>           # Imports a built-in or '<package>/__init__.py'.
@@ -825,13 +828,13 @@ import <package>.<module>  # Imports a built-in or '<package>/<module>.py'.
 * **Package is a collection of modules, but it can also define its own objects.**
 * **On a filesystem this corresponds to a directory of Python files with an optional init script.**
 * **Running `'import <package>'` does not automatically provide access to the package's modules unless they are explicitly imported in its init script.**
+* **Location of the file that is passed to python command serves as a root of all local imports.**
+* **For relative imports use `'from .[…][<pkg/module>[.…]] import <obj>'`.**
 
 
 Closure
 -------
-**We have/get a closure in Python when:**
-* **A nested function references a value of its enclosing function and then**
-* **the enclosing function returns the nested function.**
+**We have/get a closure in Python when a nested function references a value of its enclosing function and then the enclosing function returns the nested function.**
 
 ```python
 def get_multiplier(a):
@@ -845,9 +848,7 @@ def get_multiplier(a):
 >>> multiply_by_3(10)
 30
 ```
-
-* **If multiple nested functions within enclosing function reference the same value, that value gets shared.**
-* **To dynamically access function's first free variable use `'<function>.__closure__[0].cell_contents'`.**
+* **Any value that is referenced from within multiple nested functions gets shared.**
 
 ### Partial
 ```python
@@ -953,23 +954,31 @@ def add(x, y):
 
 Class
 -----
+**A template for creating user-defined objects.**
+
 ```python
-class <name>:
+class MyClass:
     def __init__(self, a):
         self.a = a
+    def __str__(self):
+        return str(self.a)
     def __repr__(self):
         class_name = self.__class__.__name__
         return f'{class_name}({self.a!r})'
-    def __str__(self):
-        return str(self.a)
 
     @classmethod
     def get_class_name(cls):
         return cls.__name__
 ```
-* **Return value of repr() should be unambiguous and of str() readable.**
+* **Return value of str() should be readable and of repr() unambiguous.**
 * **If only repr() is defined, it will also be used for str().**
 * **Methods decorated with `'@staticmethod'` do not receive 'self' nor 'cls' as their first arg.**
+
+```python
+>>> obj = MyClass(1)
+>>> obj.a, str(obj), repr(obj)
+(1, '1', 'MyClass(1)')
+```
 
 #### Expressions that call the str() method:
 ```python
@@ -989,13 +998,6 @@ Z = dataclasses.make_dataclass('Z', ['a']); print/str/repr(Z(<el>))
 >>> <el>
 ```
 
-### Constructor Overloading
-```python
-class <name>:
-    def __init__(self, a=None):
-        self.a = a
-```
-
 ### Inheritance
 ```python
 class Person:
@@ -1008,7 +1010,7 @@ class Employee(Person):
         self.staff_num = staff_num
 ```
 
-### Multiple Inheritance
+#### Multiple inheritance:
 ```python
 class A: pass
 class B: pass
@@ -1019,6 +1021,39 @@ class C(A, B): pass
 ```python
 >>> C.mro()
 [<class 'C'>, <class 'A'>, <class 'B'>, <class 'object'>]
+```
+
+### Type Annotations
+* **They add type hints to variables, arguments and functions (`'def f() -> <type>:'`).**
+* **Hints are used by type checkers like [mypy](https://pypi.org/project/mypy/), data validation libraries such as [Pydantic](https://pypi.org/project/pydantic/) and lately also by [Cython](https://pypi.org/project/Cython/) compiler. However, they are not enforced by CPython interpreter.**
+```python
+from collections import abc
+
+<name>: <type> [| ...] [= <obj>]                              # `|` since 3.10.
+<name>: list/set/abc.Iterable/abc.Sequence[<type>] [= <obj>]  # Since 3.9.
+<name>: dict/tuple[<type>, ...] [= <obj>]                     # Since 3.9.
+```
+
+### Dataclass
+**Decorator that uses class variables to generate init(), repr() and eq() special methods.**
+```python
+from dataclasses import dataclass, field, make_dataclass
+
+@dataclass(order=False, frozen=False)
+class <class_name>:
+    <attr_name>: <type>
+    <attr_name>: <type> = <default_value>
+    <attr_name>: list/dict/set = field(default_factory=list/dict/set)
+```
+* **Objects can be made [sortable](#sortable) with `'order=True'` and immutable with `'frozen=True'`.**
+* **For object to be [hashable](#hashable), all attributes must be hashable and 'frozen' must be True.**
+* **Function field() is needed because `'<attr_name>: list = []'` would make a list that is shared among all instances. Its 'default_factory' argument can be any [callable](#callable).**
+* **For attributes of arbitrary type use `'typing.Any'`.**
+
+```python
+<class> = make_dataclass('<class_name>', <coll_of_attribute_names>)
+<class> = make_dataclass('<class_name>', <coll_of_tuples>)
+<tuple> = ('<attr_name>', <type> [, <default_value>])
 ```
 
 ### Property
@@ -1041,40 +1076,8 @@ class Person:
 'Guido van Rossum'
 ```
 
-### Dataclass
-**Decorator that automatically generates init(), repr() and eq() special methods.**
-```python
-from dataclasses import dataclass, field
-
-@dataclass(order=False, frozen=False)
-class <class_name>:
-    <attr_name>: <type>
-    <attr_name>: <type> = <default_value>
-    <attr_name>: list/dict/set = field(default_factory=list/dict/set)
-```
-* **Objects can be made [sortable](#sortable) with `'order=True'` and immutable with `'frozen=True'`.**
-* **For object to be [hashable](#hashable), all attributes must be hashable and 'frozen' must be True.**
-* **Function field() is needed because `'<attr_name>: list = []'` would make a list that is shared among all instances. Its 'default_factory' argument can be any [callable](#callable).**
-* **For attributes of arbitrary type use `'typing.Any'`.**
-
-#### Inline:
-```python
-from dataclasses import make_dataclass
-<class> = make_dataclass('<class_name>', <coll_of_attribute_names>)
-<class> = make_dataclass('<class_name>', <coll_of_tuples>)
-<tuple> = ('<attr_name>', <type> [, <default_value>])
-```
-
-#### Rest of type annotations (CPython interpreter ignores them all):
-```python
-import collections.abc as abc, typing as tp
-<var_name>: list/set/abc.Iterable/abc.Sequence/tp.Optional[<type>] [= <obj>]
-<var_name>: dict/tuple/tp.Union[<type>, ...] [= <obj>]
-def func(<arg_name>: <type> [= <obj>]) -> <type>: ...
-```
-
 ### Slots
-**Mechanism that restricts objects to attributes listed in 'slots' and significantly reduces their memory footprint.**
+**Mechanism that restricts objects to attributes listed in 'slots', reduces their memory footprint.**
 
 ```python
 class MyClassWithSlots:
@@ -1086,8 +1089,7 @@ class MyClassWithSlots:
 ### Copy
 ```python
 from copy import copy, deepcopy
-<object> = copy(<object>)
-<object> = deepcopy(<object>)
+<object> = copy/deepcopy(<object>)
 ```
 
 
@@ -1200,7 +1202,7 @@ class Counter:
 ```
 
 ### Context Manager
-* **With statements only work with objects that have enter() and exit() special methods.**
+* **With statements only work on objects that have enter() and exit() special methods.**
 * **Enter() should lock the resources and optionally return an object.**
 * **Exit() should release the resources.**
 * **Any exception that happens inside the with block is passed to the exit() method.**
@@ -1292,7 +1294,7 @@ class MySequence:
 ### ABC Sequence
 * **It's a richer interface than the basic sequence.**
 * **Extending it generates iter(), contains(), reversed(), index() and count().**
-* **Unlike `'abc.Iterable'` and `'abc.Collection'`, it is not a duck type. That is why `'issubclass(MySequence, abc.Sequence)'` would return False even if MySequence had all the methods defined. It however recognizes list, tuple, range, str, bytes, bytearray, array, memoryview and deque, because they are registered as its virtual subclasses.**
+* **Unlike `'abc.Iterable'` and `'abc.Collection'`, it is not a duck type. That is why `'issubclass(MySequence, abc.Sequence)'` would return False even if MySequence had all the methods defined. It however recognizes list, tuple, range, str, bytes, bytearray, array, memoryview and deque, since they are registered as Sequence's virtual subclasses.**
 ```python
 from collections import abc
 
@@ -1319,46 +1321,46 @@ class MyAbcSequence(abc.Sequence):
 | count()    |            |            |            |     Yes      |
 +------------+------------+------------+------------+--------------+
 ```
-* **Other ABCs that generate missing methods are: MutableSequence, Set, MutableSet, Mapping and MutableMapping.**
+* **Method iter() is required for `'isinstance(<obj>, abc.Iterable)'` to return True, however any object with getitem() will work with any code expecting an iterable.**
+* **Other extendable ABCs: MutableSequence, Set, MutableSet, Mapping, MutableMapping.**
 * **Names of their required methods are stored in `'<abc>.__abstractmethods__'`.**
 
 
 Enum
 ----
+**Class of named constants called members.**
+
 ```python
 from enum import Enum, auto
 ```
 
 ```python
 class <enum_name>(Enum):
-    <member_name> = auto()
-    <member_name> = <value>
-    <member_name> = <value>, <value>
+    <member_name> = auto()              # Increment of the last numeric value or 1.
+    <member_name> = <value>             # Values don't have to be hashable.
+    <member_name> = <value>, <value>    # Tuple can be used for multiple values.
 ```
-* **Function auto() returns an increment of the last numeric value or 1.**
-* **Accessing a member named after a reserved keyword causes SyntaxError.**
 * **Methods receive the member they were called on as the 'self' argument.**
+* **Accessing a member named after a reserved keyword causes SyntaxError.**
 
 ```python
-<member> = <enum>.<member_name>           # Returns a member.
-<member> = <enum>['<member_name>']        # Returns a member. Raises KeyError.
-<member> = <enum>(<value>)                # Returns a member. Raises ValueError.
-<str>    = <member>.name                  # Returns member's name.
-<obj>    = <member>.value                 # Returns member's value.
+<member> = <enum>.<member_name>         # Returns a member.
+<member> = <enum>['<member_name>']      # Returns a member. Raises KeyError.
+<member> = <enum>(<value>)              # Returns a member. Raises ValueError.
+<str>    = <member>.name                # Returns member's name.
+<obj>    = <member>.value               # Returns member's value.
 ```
 
 ```python
-<list>   = list(<enum>)                   # Returns enum's members.
-<list>   = [a.name for a in <enum>]       # Returns enum's member names.
-<list>   = [a.value for a in <enum>]      # Returns enum's member values.
-<member> = random.choice(list(<enum>))    # Returns a random member.
+<list>   = list(<enum>)                 # Returns enum's members.
+<list>   = [a.name for a in <enum>]     # Returns enum's member names.
+<list>   = [a.value for a in <enum>]    # Returns enum's member values.
 ```
 
 ```python
-def get_next_member(member):
-    members = list(type(member))
-    index = members.index(member) + 1
-    return members[index % len(members)]
+<enum>   = type(<member>)               # Returns member's enum.
+<iter>   = itertools.cycle(<enum>)      # Returns endless iterator of members.
+<member> = random.choice(list(<enum>))  # Returns a random member.
 ```
 
 ### Inline
@@ -1400,7 +1402,7 @@ finally:
 ```
 * **Code inside the `'else'` block will only be executed if `'try'` block had no exceptions.**
 * **Code inside the `'finally'` block will always be executed (unless a signal is received).**
-* **All variables that are initialized in executed blocks are also visible in all subsequent blocks, as well as outside the try/except clause (only function block delimits scope).**
+* **All variables that are initialized in executed blocks are also visible in all subsequent blocks, as well as outside the try statement (only function block delimits scope).**
 * **To catch signals use `'signal.signal(signal_number, <func>)'`.**
 
 ### Catching Exceptions
@@ -1411,9 +1413,10 @@ except (<exception>, [...]): ...
 except (<exception>, [...]) as <name>: ...
 ```
 * **Also catches subclasses of the exception.**
-* **Use `'traceback.print_exc()'` to print the error message to stderr.**
+* **Use `'traceback.print_exc()'` to print the full error message to stderr.**
 * **Use `'print(<name>)'` to print just the cause of the exception (its arguments).**
-* **Use `'logging.exception(<message>)'` to log the passed message, followed by the full error message of the caught exception.**
+* **Use `'logging.exception(<message>)'` to log the passed message, followed by the full error message of the caught exception. For details see [logging](#logging).**
+* **Use `'sys.exc_info()'` to get exception type, object, and traceback of caught exception.**
 
 ### Raising Exceptions
 ```python
@@ -1453,7 +1456,7 @@ BaseException
       +-- LookupError             # Base class for errors when a collection can't find an item.
       |    +-- IndexError         # Raised when a sequence index is out of range.
       |    +-- KeyError           # Raised when a dictionary key or set element is missing.
-      +-- MemoryError             # Out of memory. Could be too late to start deleting vars.
+      +-- MemoryError             # Out of memory. May be too late to start deleting objects.
       +-- NameError               # Raised when nonexistent name (variable/func/class) is used.
       |    +-- UnboundLocalError  # Raised when local name is used before it's being defined.
       +-- OSError                 # Errors such as FileExistsError/TimeoutError (see #Open).
@@ -1516,7 +1519,7 @@ print(<el_1>, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
 from pprint import pprint
 pprint(<collection>, width=80, depth=None, compact=False, sort_dicts=True)
 ```
-* **Each item is printed on its own line if collection takes up more than 'width' characters.**
+* **Each item is printed on its own line if collection exceeds 'width' characters.**
 * **Nested collections that are 'depth' levels deep get printed as '...'.**
 
 
@@ -1526,7 +1529,7 @@ Input
 <str> = input(prompt=None)
 ```
 * **Reads a line from the user input or pipe if present (trailing newline gets stripped).**
-* **Prompt string is printed to the standard output before reading input.**
+* **Prompt string is printed to the standard output before input is read.**
 * **Raises EOFError when user hits EOF (ctrl-d/ctrl-z⏎) or input stream gets exhausted.**
 
 
@@ -1546,13 +1549,13 @@ p.add_argument('-<short_name>', '--<name>', action='store_true')  # Flag (defaul
 p.add_argument('-<short_name>', '--<name>', type=<type>)          # Option (defaults to None).
 p.add_argument('<name>', type=<type>, nargs=1)                    # Mandatory first argument.
 p.add_argument('<name>', type=<type>, nargs='+')                  # Mandatory remaining args.
-p.add_argument('<name>', type=<type>, nargs='*')                  # Optional arguments.
+p.add_argument('<name>', type=<type>, nargs='?/*')                # Optional argument/s.
 <args> = p.parse_args()                                           # Exits on parsing error.
 <obj>  = <args>.<name>                                            # Returns `<type>(<arg>)`.
 ```
 
 * **Use `'help=<str>'` to set argument description that will be displayed in help message.**
-* **Use `'default=<el>'` to set option's default value.**
+* **Use `'default=<el>'` to set option's or optional argument's default value.**
 * **Use `'type=FileType(<mode>)'` for files. Accepts 'encoding', but 'newline' is None.**
 
 
@@ -1602,7 +1605,7 @@ Open
 <file>.write(<str/bytes>)           # Writes a string or bytes object.
 <file>.writelines(<collection>)     # Writes a coll. of strings or bytes objects.
 <file>.flush()                      # Flushes write buffer. Runs every 4096/8192 B.
-<file>.close()                      # Closes the file after flushing.
+<file>.close()                      # Closes the file after flushing write buffer.
 ```
 * **Methods do not add or strip trailing newlines, not even writelines().**
 
@@ -1629,7 +1632,7 @@ from pathlib import Path
 ```
 
 ```python
-<str>  = os.getcwd()                # Returns the current working directory.
+<str>  = os.getcwd()                # Returns current directory. Same as `$ pwd`.
 <str>  = os.path.join(<path>, ...)  # Joins two or more pathname components.
 <str>  = os.path.realpath(<path>)   # Resolves symlinks and calls path.abspath().
 ```
@@ -1653,7 +1656,7 @@ from pathlib import Path
 
 ```python
 <stat> = os.stat(<path>)            # Or: <DirEntry/Path>.stat()
-<real> = <stat>.st_mtime/st_size/…  # Modification time, size in bytes, ...
+<num>  = <stat>.st_mtime/st_size/…  # Modification time, size in bytes, ...
 ```
 
 ### DirEntry
@@ -1836,12 +1839,12 @@ import csv
 ### Parameters
 * **`'dialect'` - Master parameter that sets the default values. String or a 'csv.Dialect' object.**
 * **`'delimiter'` - A one-character string used to separate fields.**
-* **`'quotechar'` - Character for quoting fields that contain special characters.**
-* **`'doublequote'` - Whether quotechars inside fields are/get doubled or escaped.**
-* **`'skipinitialspace'` - Is space character at the start of the field stripped by the reader.**
 * **`'lineterminator'` - How writer terminates rows. Reader is hardcoded to '\n', '\r', '\r\n'.**
+* **`'quotechar'` - Character for quoting fields that contain special characters.**
+* **`'escapechar'` - Character for escaping quotechars.**
+* **`'doublequote'` - Whether quotechars inside fields are/get doubled or escaped.**
 * **`'quoting'` - 0: As necessary, 1: All, 2: All but numbers which are read as floats, 3: None.**
-* **`'escapechar'` - Character for escaping quotechars if 'doublequote' is False.**
+* **`'skipinitialspace'` - Is space character at the start of the field stripped by the reader.**
 
 ### Dialects
 ```text
@@ -1849,12 +1852,12 @@ import csv
 |                  |     excel    |   excel-tab  |     unix     |
 +------------------+--------------+--------------+--------------+
 | delimiter        |       ','    |      '\t'    |       ','    |
-| quotechar        |       '"'    |       '"'    |       '"'    |
-| doublequote      |      True    |      True    |      True    |
-| skipinitialspace |     False    |     False    |     False    |
 | lineterminator   |    '\r\n'    |    '\r\n'    |      '\n'    |
-| quoting          |         0    |         0    |         1    |
+| quotechar        |       '"'    |       '"'    |       '"'    |
 | escapechar       |      None    |      None    |      None    |
+| doublequote      |      True    |      True    |      True    |
+| quoting          |         0    |         0    |         1    |
+| skipinitialspace |     False    |     False    |     False    |
 +------------------+--------------+--------------+--------------+
 ```
 
@@ -1948,11 +1951,11 @@ with <conn>.begin(): ...                        # Exits the block with commit or
 
 Bytes
 -----
-**Bytes object is an immutable sequence of single bytes. Mutable version is called bytearray.**
+**A bytes object is an immutable sequence of single bytes. Mutable version is called bytearray.**
 
 ```python
 <bytes> = b'<str>'                       # Only accepts ASCII characters and \x00-\xff.
-<int>   = <bytes>[<index>]               # Returns an int in range from 0 to 255.
+<int>   = <bytes>[index]                 # Returns an int in range from 0 to 255.
 <bytes> = <bytes>[<slice>]               # Returns bytes even if it has only one element.
 <bytes> = <bytes>.join(<coll_of_bytes>)  # Joins elements using bytes as a separator.
 ```
@@ -1960,17 +1963,17 @@ Bytes
 ### Encode
 ```python
 <bytes> = bytes(<coll_of_ints>)          # Ints must be in range from 0 to 255.
-<bytes> = bytes(<str>, 'utf-8')          # Or: <str>.encode('utf-8')
-<bytes> = <int>.to_bytes(n_bytes, …)     # `byteorder='big/little', signed=False`.
+<bytes> = bytes(<str>, 'utf-8')          # Encodes string. Also <str>.encode('utf-8').
 <bytes> = bytes.fromhex('<hex>')         # Hex pairs can be separated by whitespaces.
+<bytes> = <int>.to_bytes(n_bytes, …)     # `byteorder='big/little', signed=False`.
 ```
 
 ### Decode
 ```python
 <list>  = list(<bytes>)                  # Returns ints in range from 0 to 255.
-<str>   = str(<bytes>, 'utf-8')          # Or: <bytes>.decode('utf-8')
+<str>   = str(<bytes>, 'utf-8')          # Decodes bytes. Also <bytes>.decode('utf-8').
+<str>   = <bytes>.hex()                  # Returns hex pairs. Accepts `sep=<str>`.
 <int>   = int.from_bytes(<bytes>, …)     # `byteorder='big/little', signed=False`.
-'<hex>' = <bytes>.hex()                  # Returns hex pairs. Accepts `sep=<str>`.
 ```
 
 ### Read Bytes from File
@@ -1995,8 +1998,9 @@ Struct
 
 ```python
 from struct import pack, unpack
-<bytes> = pack('<format>', <el_1> [, ...])  # Packages arguments or raises struct.error.
-<tuple> = unpack('<format>', <bytes>)       # Use iter_unpack() for iterator of tuples.
+
+<bytes> = pack('<format>', <el_1> [, ...])  # Packs objects according to format string.
+<tuple> = unpack('<format>', <bytes>)       # Use iter_unpack() to get iterator of tuples.
 ```
 
 ```python
@@ -2012,7 +2016,7 @@ b'\x00\x01\x00\x02\x00\x00\x00\x03'
 * **`'<'` - Little-endian (i.e. least significant byte first).**
 * **`'>'` - Big-endian (also `'!'`).**
 
-#### Besides numbers, pack() and unpack() also support bytes objects as part of the sequence:
+#### Besides numbers, pack() and unpack() also support bytes objects as a part of the sequence:
 * **`'c'` - A bytes object with a single element. For pad byte use `'x'`.**
 * **`'<n>s'` - A bytes object with n elements (not effected by byte order).**
 
@@ -2034,34 +2038,36 @@ Array
 
 ```python
 from array import array
-<array> = array('<typecode>', <collection>)    # Array from collection of numbers.
+```
+
+```python
+<array> = array('<typecode>', <coll_of_nums>)  # Array from collection of numbers.
 <array> = array('<typecode>', <bytes>)         # Array from bytes object.
 <array> = array('<typecode>', <array>)         # Treats array as a sequence of numbers.
-<array>.fromfile(<file>, n_items)              # Appends items. Raises EOFError on end.
-<bytes> = bytes(<array>)                       # Or: <array>.tobytes()
+<array>.fromfile(<file>, n_items)              # Appends items from the binary file.
+```
+
+```python
+<bytes> = bytes(<array>)                       # Returns a copy of array's memory.
 <file>.write(<array>)                          # Writes array to the binary file.
 ```
 
 
 Memory View
 -----------
-* **A sequence object that points to the memory of another bytes-like object.**
-* **Each element can reference a single or multiple consecutive bytes, depending on format.**
-* **Order and number of elements can be changed with slicing.**
-* **Casting only works between char and other types and uses system's sizes.**
-* **Byte order is always determined by the system.**
+**A sequence object that points to the memory of another bytes-like object. Each element can reference a single or multiple consecutive bytes, depending on format. Order and number of elements can be changed with slicing.**
 
 ```python
 <mview> = memoryview(<bytes/bytearray/array>)  # Immutable if bytes, else mutable.
-<real>  = <mview>[<index>]                     # Returns an int or a float.
-<mview> = <mview>[<slice>]                     # Mview with rearranged elements.
-<mview> = <mview>.cast('<typecode>')           # Casts memoryview to the new format.
-<mview>.release()                              # Releases the object's memory buffer.
+<real>  = <mview>[index]                       # Returns an int or a float.
+<mview> = <mview>[<slice>]                     # Returns mview with rearranged elements.
+<mview> = <mview>.cast('<typecode>')           # Only works between b/B/c and other types.
+<mview>.release()                              # Releases memory buffer of the base object.
 ```
 
 ```python
 <bytes> = bytes(<mview>)                       # Returns a new bytes object.
-<bytes> = <bytes>.join(<coll_of_mviews>)       # Joins mviews using bytes object as sep.
+<bytes> = <bytes>.join(<coll_of_mviews>)       # Joins mviews using bytes as a separator.
 <array> = array('<typecode>', <mview>)         # Treats mview as a sequence of numbers.
 <file>.write(<mview>)                          # Writes mview to the binary file.
 ```
@@ -2069,8 +2075,7 @@ Memory View
 ```python
 <list>  = list(<mview>)                        # Returns a list of ints or floats.
 <str>   = str(<mview>, 'utf-8')                # Treats mview as a bytes object.
-<int>   = int.from_bytes(<mview>, …)           # `byteorder='big/little', signed=False`.
-'<hex>' = <mview>.hex()                        # Treats mview as a bytes object.
+<str>   = <mview>.hex()                        # Returns hex pairs. Accepts `sep=<str>`.
 ```
 
 
@@ -2080,11 +2085,14 @@ Deque
 
 ```python
 from collections import deque
-<deque> = deque(<collection>)                  # Also `maxlen=None`.
+```
+
+```python
+<deque> = deque(<collection>)                  # Use `maxlen=<int>` to set size limit.
 <deque>.appendleft(<el>)                       # Opposite element is dropped if full.
-<deque>.extendleft(<collection>)               # Collection gets reversed.
-<el> = <deque>.popleft()                       # Raises IndexError if empty.
-<deque>.rotate(n=1)                            # Rotates elements to the right.
+<deque>.extendleft(<collection>)               # Passed collection gets reversed.
+<deque>.rotate(n=1)                            # Last element becomes first.
+<el> = <deque>.popleft()                       # Raises IndexError if deque is empty.
 ```
 
 
@@ -2092,7 +2100,7 @@ Threading
 ---------
 **CPython interpreter can only run a single thread at a time. Using multiple threads won't result in a faster execution, unless at least one of the threads contains an I/O operation.**
 ```python
-from threading import Thread, Timer, RLock, Semaphore, Event, Barrier
+from threading import Thread, RLock, Semaphore, Event, Barrier
 from concurrent.futures import ThreadPoolExecutor, as_completed
 ```
 
@@ -2105,7 +2113,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 ```
 * **Use `'kwargs=<dict>'` to pass keyword arguments to the function.**
 * **Use `'daemon=True'`, or the program will not be able to exit while the thread is alive.**
-* **To delay thread execution use `'Timer(seconds, <func>)'` instead of Thread().**
 
 ### Lock
 ```python
@@ -2150,7 +2157,7 @@ with <lock>:                                   # Enters the block by calling acq
 <bool> = <Future>.cancel()                     # Cancels or returns False if running/finished.
 <iter> = as_completed(<coll_of_Futures>)       # Next() waits for next completed Future.
 ```
-* **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called. Map() times from original call and as_completed() from first call to next().**
+* **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called/blocking. Map() times from original call and as_completed() from first call to next(). As\_completed() fails if next() is called too late, even if thread finished on time.**
 * **Exceptions that happen inside threads are raised when next() is called on map's iterator or when result() is called on a Future. Its exception() method returns exception or None.**
 * **ProcessPoolExecutor provides true parallelism, but everything sent to/from workers must be [pickable](#pickle). Queues must be sent using executor's 'initargs' and 'initializer' parameters.**
 
@@ -2161,7 +2168,7 @@ Operator
 ```python
 import operator as op
 <bool> = op.not_(<obj>)                                         # or, and, not (or/and missing)
-<bool> = op.eq/ne/lt/le/gt/ge/contains/is_(<obj>, <obj>)        # ==, !=, <, <=, >, >=, in, is
+<bool> = op.eq/ne/lt/le/gt/ge/is_/contains(<obj>, <obj>)        # ==, !=, <, <=, >, >=, is, in
 <obj>  = op.or_/xor/and_(<int/set>, <int/set>)                  # |, ^, &
 <int>  = op.lshift/rshift(<int>, <int>)                         # <<, >>
 <obj>  = op.add/sub/mul/truediv/floordiv/mod(<obj>, <obj>)      # +, -, *, /, //, %
@@ -2255,7 +2262,8 @@ logging.basicConfig(
 <Handler>.setFormatter(<Formatter>)                  # Adds Formatter to the Handler.
 <Handler>.setLevel(<int/str>)                        # Processes all messages by default.
 <Logger>.addHandler(<Handler>)                       # Adds Handler to the Logger.
-<Logger>.setLevel(<int/str>)                         # What is sent to its/ancestor's handlers.
+<Logger>.setLevel(<int/str>)                         # What is sent to its/ancestors' handlers.
+<Logger>.propagate = <bool>                          # Cuts off ancestors' handlers if False.
 ```
 * **Parent logger can be specified by naming the child logger `'<parent>.<name>'`.**
 * **If logger doesn't have a set level it inherits it from the first ancestor that does.**
@@ -2266,10 +2274,10 @@ logging.basicConfig(
 ```python
 >>> logger = logging.getLogger('my_module')
 >>> handler = logging.FileHandler('test.log', encoding='utf-8')
->>> formatter = logging.Formatter('%(asctime)s %(levelname)s:%(name)s:%(message)s')
->>> handler.setFormatter(formatter)
+>>> handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s:%(name)s:%(message)s'))
 >>> logger.addHandler(handler)
->>> logging.basicConfig(level='DEBUG')
+>>> logger.setLevel('DEBUG')
+>>> logging.basicConfig()
 >>> logging.root.handlers[0].setLevel('WARNING')
 >>> logger.critical('Running out of disk space.')
 CRITICAL:my_module:Running out of disk space.
@@ -2290,17 +2298,17 @@ Introspection
 <list> = dir(<object>)                     # Names of object's attributes (including methods).
 <dict> = vars(<object>)                    # Dict of writable attributes. Also <obj>.__dict__.
 <bool> = hasattr(<object>, '<attr_name>')  # Checks if getattr() raises an AttributeError.
-value  = getattr(<object>, '<attr_name>')  # Raises AttributeError if attribute is missing.
-setattr(<object>, '<attr_name>', value)    # Only works on objects with '__dict__' attribute.
+value  = getattr(<object>, '<attr_name>')  # Default value can be passed as the third argument.
+setattr(<object>, '<attr_name>', value)    # Only works on objects with __dict__ attribute.
 delattr(<object>, '<attr_name>')           # Same. Also `del <object>.<attr_name>`.
 ```
 
 ```python
-<Sig>  = inspect.signature(<function>)     # Function's Signature object.
-<dict> = <Sig>.parameters                  # Dict of Parameter objects.
-<memb> = <Param>.kind                      # Member of ParameterKind enum.
-<obj>  = <Param>.default                   # Default value or Parameter.empty.
-<type> = <Param>.annotation                # Type or Parameter.empty.
+<Sig>  = inspect.signature(<function>)     # Returns function's Signature object.
+<dict> = <Sig>.parameters                  # Dict of Parameter objects. Also <Sig>.return_type.
+<memb> = <Param>.kind                      # Member of ParameterKind enum (KEYWORD_ONLY, ...).
+<obj>  = <Param>.default                   # Returns param's default value or Parameter.empty.
+<type> = <Param>.annotation                # Returns param's type hint or Parameter.empty.
 ```
 
 
@@ -2315,9 +2323,9 @@ import asyncio as aio
 ```
 
 ```python
-<coro> = <async_func>(<args>)             # Creates a coroutine.
+<coro> = <async_function>(<args>)         # Creates a coroutine by calling async def function.
 <obj>  = await <coroutine>                # Starts the coroutine and returns result.
-<task> = aio.create_task(<coroutine>)     # Schedules coroutine for execution.
+<task> = aio.create_task(<coroutine>)     # Schedules the coroutine for execution.
 <obj>  = await <task>                     # Returns result. Also <task>.cancel().
 ```
 
@@ -2539,8 +2547,8 @@ import flask
 ```
 
 ```python
-app = flask.Flask(__name__)
-app.run(host=None, port=None, debug=None)
+app = flask.Flask(__name__)                # Returns app object. Run at the top.
+app.run(host=None, port=None, debug=None)  # Starts the app. Run at the bottom.
 ```
 * **Starts the app at `'http://localhost:5000'`. Use `'host="0.0.0.0"'` to run externally.**
 * **Install a WSGI server like [Waitress](https://flask.palletsprojects.com/en/latest/deploying/waitress/) and a HTTP server such as [Nginx](https://flask.palletsprojects.com/en/latest/deploying/nginx/) for better security.**
@@ -2562,7 +2570,7 @@ def serve_html(sport):
 * **Use `'render_template(filename, <kwargs>)'` to render file located in templates dir.**
 * **To return an error code use `'abort(<int>)'` and to redirect use `'redirect(<url>)'`.**
 * **`'request.args[<str>]'` returns parameter from the query string (URL part after '?').**
-* **Use `'session[key] = value'` to store session data like username, etc.**
+* **`'session[<str>] = <obj>'` stores session data. Needs `'app.secret_key = <str>'`.**
 
 ### REST Request
 ```python
@@ -2620,25 +2628,25 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
 ```
 
 ### Call and Flame Graphs
-```text
-$ apt/brew install graphviz && pip3 install gprof2dot snakeviz
-$ tail --lines=4 test.py > test.py
-$ python3 -m cProfile -o test.prof test.py
-$ gprof2dot --format=pstats test.prof | dot -T png -o test.png
-$ xdg-open/open test.png
-$ snakeviz test.prof
+```bash
+$ apt/brew install graphviz && pip3 install gprof2dot snakeviz  # Or download installer.
+$ tail --lines=+2 test.py > test.py                             # Removes first line.
+$ python3 -m cProfile -o test.prof test.py                      # Runs built-in profiler.
+$ gprof2dot --format=pstats test.prof | dot -T png -o test.png  # Generates call graph.
+$ xdg-open/open test.png                                        # Displays call graph.
+$ snakeviz test.prof                                            # Displays flame graph.
 ```
 
 ### Sampling and Memory Profilers
 ```text
-+--------------+----------+------------+-------------------------------+------+
-| pip3 install |   Type   |   Target   |          How to run           | Live |
-+--------------+----------+------------+-------------------------------+------+
-| pyinstrument | Sampling |    CPU     | pyinstrument test.py          | No   |
-| py-spy       | Sampling |    CPU     | py-spy top -- python3 test.py | Yes  |
-| scalene      | Sampling | CPU+Memory | scalene test.py               | No   |
-| memray       | Tracing  |   Memory   | memray run --live test.py     | Yes  |
-+--------------+----------+------------+-------------------------------+------+
++--------------+------------+-------------------------------+-------+------+
+| pip3 install |   Target   |          How to run           | Lines | Live |
++--------------+------------+-------------------------------+-------+------+
+| pyinstrument |    CPU     | pyinstrument test.py          |  No   | No   |
+| py-spy       |    CPU     | py-spy top -- python3 test.py |  No   | Yes  |
+| scalene      | CPU+Memory | scalene test.py               |  Yes  | No   |
+| memray       |   Memory   | memray run --live test.py     |  Yes  | Yes  |
++--------------+------------+-------------------------------+-------+------+
 ```
 
 
@@ -2666,7 +2674,7 @@ import numpy as np
 
 ```python
 <array> = np.copy/abs/sqrt/log/int64(<array>)           # Returns new array of the same shape.
-<array> = <array>.sum/max/mean/argmax/all(axis)         # Passed dimension gets aggregated.
+<array> = <array>.sum/max/mean/argmax/all(axis)         # Aggregates specified dimension.
 <array> = np.apply_along_axis(<func>, axis, <array>)    # Func can return a scalar or array.
 ```
 
@@ -2680,25 +2688,26 @@ import numpy as np
 
 ### Indexing
 ```perl
-<el>       = <2d_array>[row_index, column_index]        # <3d_a>[table_i, row_i, column_i]
-<1d_view>  = <2d_array>[row_index]                      # <3d_a>[table_i, row_i]
-<1d_view>  = <2d_array>[:, column_index]                # <3d_a>[table_i, :, column_i]
-<2d_view>  = <2d_array>[rows_slice, columns_slice]      # <3d_a>[table_i, rows_s, columns_s]
+<el>       = <2d>[row_index, col_index]                 # Or: <3d>[<int>, <int>, <int>]
+<1d_view>  = <2d>[row_index]                            # Or: <3d>[<int>, <int>, <slice>]
+<1d_view>  = <2d>[:, col_index]                         # Or: <3d>[<int>, <slice>, <int>]
+<2d_view>  = <2d>[from:to_row_i, from:to_col_i]         # Or: <3d>[<int>, <slice>, <slice>]
 ```
 
 ```perl
-<2d_array> = <2d_array>[row_indexes]                    # <3d_a>[table_i/is, row_is]
-<2d_array> = <2d_array>[:, column_indexes]              # <3d_a>[table_i/is, :, column_is]
-<1d_array> = <2d_array>[row_indexes, column_indexes]    # <3d_a>[table_i/is, row_is, column_is]
-<1d_array> = <2d_array>[row_indexes, column_index]      # <3d_a>[table_i/is, row_is, column_i]
+<1d_array> = <2d>[row_indices, col_indices]             # Or: <3d>[<int/1d>, <1d>, <1d>]
+<2d_array> = <2d>[row_indices]                          # Or: <3d>[<int/1d>, <1d>, <slice>]
+<2d_array> = <2d>[:, col_indices]                       # Or: <3d>[<int/1d>, <slice>, <1d>]
+<2d_array> = <2d>[np.ix_(row_indices, col_indices)]     # Or: <3d>[<int/1d/2d>, <2d>, <2d>]
 ```
 
 ```perl
-<2d_bools> = <2d_array> > <el/1d/2d_array>              # 1d_array must have size of a row.
-<1d/2d_a>  = <2d_array>[<2d/1d_bools>]                  # 1d_bools must have size of a column.
+<2d_bools> = <2d> > <el/1d/2d>                          # 1d object must have size of a row.
+<1/2d_arr> = <2d>[<2d/1d_bools>]                        # 1d_bools must have size of a column.
 ```
-* **Indexes should not be tuples because Python converts `'obj[i, j]'`  to `'obj[(i, j)]'`!**
-* **`':'` returns a slice of all dimension's indexes. Omitted dimensions default to `':'`.**
+* **`':'` returns a slice of all dimension's indices. Omitted dimensions default to `':'`.**
+* **Indices should not be tuples because Python converts `'obj[i, j]'`  to `'obj[(i, j)]'`!**
+* **`'ix_()'` returns two 2d arrays. Indices of different shapes get unified with broadcasting.**
 * **Any value that is broadcastable to the indexed shape can be assigned to the selection.**
 
 ### Broadcasting
@@ -2777,7 +2786,7 @@ from PIL import Image
 ```
 
 ```python
-<Image> = <Image>.filter(<Filter>)              # `<Filter> = ImageFilter.<name>([<args>])`
+<Image> = <Image>.filter(<Filter>)              # `<Filter> = ImageFilter.<name>(<args>)`
 <Image> = <Enhance>.enhance(<float>)            # `<Enhance> = ImageEnhance.<name>(<Image>)`
 ```
 
@@ -3156,14 +3165,14 @@ Name: a, dtype: int64
 ```
 
 ```python
-<el> = <Sr>.loc[key]                           # Or: <Sr>.iloc[index]
-<Sr> = <Sr>.loc[keys]                          # Or: <Sr>.iloc[indexes]
-<Sr> = <Sr>.loc[from_key : to_key_inclusive]   # Or: <Sr>.iloc[from_i : to_i_exclusive]
+<el> = <Sr>.loc[key]                           # Or: <Sr>.iloc[i]
+<Sr> = <Sr>.loc[coll_of_keys]                  # Or: <Sr>.iloc[coll_of_i]
+<Sr> = <Sr>.loc[from_key : to_key_inc]         # Or: <Sr>.iloc[from_i : to_i_exc]
 ```
 
 ```python
-<el> = <Sr>[key/index]                         # Or: <Sr>.key
-<Sr> = <Sr>[keys/indexes]                      # Or: <Sr>[<keys_slice/slice>]
+<el> = <Sr>[key/i]                             # Or: <Sr>.<key>
+<Sr> = <Sr>[coll_of_keys/coll_of_i]            # Or: <Sr>[key/i : key/i]
 <Sr> = <Sr>[bools]                             # Or: <Sr>.loc/iloc[bools]
 ```
 
@@ -3186,7 +3195,7 @@ plt.show()                                     # Displays the plot. Also plt.sav
 #### Series — Aggregate, Transform, Map:
 ```python
 <el> = <Sr>.sum/max/mean/idxmax/all()          # Or: <Sr>.agg(lambda <Sr>: <el>)
-<Sr> = <Sr>.rank/diff/cumsum/ffill/interplt()  # Or: <Sr>.agg/transform(lambda <Sr>: <Sr>)
+<Sr> = <Sr>.rank/diff/cumsum/ffill/interpo…()  # Or: <Sr>.agg/transform(lambda <Sr>: <Sr>)
 <Sr> = <Sr>.fillna(<el>)                       # Or: <Sr>.agg/transform/map(lambda <el>: <el>)
 ```
 
@@ -3214,7 +3223,7 @@ y    3
 |               |     y  2    |   y     2   |       y  2    |
 +---------------+-------------+-------------+---------------+
 ```
-* **Keys/indexes/bools can't be tuples because `'obj[x, y]'` is converted to `'obj[(x, y)]'`!**
+* **Indexing objects can't be tuples because `'obj[x, y]'` is converted to `'obj[(x, y)]'`!**
 * **Methods ffill(), interpolate(), fillna() and dropna() accept `'inplace=True'`.**
 * **Last result has a hierarchical index. Use `'<Sr>[key_1, key_2]'` to get its values.**
 
@@ -3234,14 +3243,14 @@ b  3  4
 ```
 
 ```python
-<el>    = <DF>.loc[row_key, column_key]        # Or: <DF>.iloc[row_index, column_index]
-<Sr/DF> = <DF>.loc[row_key/s]                  # Or: <DF>.iloc[row_index/es]
-<Sr/DF> = <DF>.loc[:, column_key/s]            # Or: <DF>.iloc[:, column_index/es]
-<DF>    = <DF>.loc[row_bools, column_bools]    # Or: <DF>.iloc[row_bools, column_bools]
+<el>    = <DF>.loc[row_key, col_key]           # Or: <DF>.iloc[row_i, col_i]
+<Sr/DF> = <DF>.loc[row_key/s]                  # Or: <DF>.iloc[row_i/s]
+<Sr/DF> = <DF>.loc[:, col_key/s]               # Or: <DF>.iloc[:, col_i/s]
+<DF>    = <DF>.loc[row_bools, col_bools]       # Or: <DF>.iloc[row_bools, col_bools]
 ```
 
 ```python
-<Sr/DF> = <DF>[column_key/s]                   # Or: <DF>.column_key
+<Sr/DF> = <DF>[col_key/s]                      # Or: <DF>.<col_key>
 <DF>    = <DF>[row_bools]                      # Keeps rows as specified by bools.
 <DF>    = <DF>[<DF_of_bools>]                  # Assigns NaN to items that are False in bools.
 ```
@@ -3252,10 +3261,10 @@ b  3  4
 ```
 
 ```python
-<DF>    = <DF>.set_index(column_key)           # Replaces row keys with values from the column.
+<DF>    = <DF>.set_index(col_key)              # Replaces row keys with column's values.
 <DF>    = <DF>.reset_index(drop=False)         # Drops or moves row keys to column named index.
 <DF>    = <DF>.sort_index(ascending=True)      # Sorts rows by row keys. Use `axis=1` for cols.
-<DF>    = <DF>.sort_values(column_key/s)       # Sorts rows by passed column/s. Also `axis=1`.
+<DF>    = <DF>.sort_values(col_key/s)          # Sorts rows by passed column/s. Also `axis=1`.
 ```
 
 #### DataFrame — Merge, Join, Concat:
@@ -3305,7 +3314,7 @@ c  6  7
 #### DataFrame — Aggregate, Transform, Map:
 ```python
 <Sr> = <DF>.sum/max/mean/idxmax/all()          # Or: <DF>.apply/agg(lambda <Sr>: <el>)
-<DF> = <DF>.rank/diff/cumsum/ffill/interplt()  # Or: <DF>.apply/agg/transfrm(lambda <Sr>: <Sr>)
+<DF> = <DF>.rank/diff/cumsum/ffill/interpo…()  # Or: <DF>.apply/agg/transfo…(lambda <Sr>: <Sr>)
 <DF> = <DF>.fillna(<el>)                       # Or: <DF>.applymap(lambda <el>: <el>)
 ```
 * **All operations operate on columns by default. Pass `'axis=1'` to process the rows instead.**
@@ -3340,7 +3349,7 @@ b  3  4
 
 #### DataFrame — Plot, Encode, Decode:
 ```python
-<DF>.plot.line/area/bar/hist/scatter/box()     # Also: `x=column_key, y=column_key/s`.
+<DF>.plot.line/area/bar/scatter(x=col_key, …)  # `y=col_key/s`. Also hist/box(by=col_key).
 plt.show()                                     # Displays the plot. Also plt.savefig(<path>).
 ```
 
@@ -3352,8 +3361,8 @@ plt.show()                                     # Displays the plot. Also plt.sav
 ```
 
 ```python
-<dict> = <DF>.to_dict(['d/l/s/…'])             # Returns columns as dicts, lists or series.
-<str>  = <DF>.to_json/html/csv([<path>])       # Also to_markdown/latex([<path>]).
+<dict> = <DF>.to_dict('d/l/s/…')               # Returns columns as dicts, lists or series.
+<str>  = <DF>.to_json/html/csv/latex()         # Saves output to file if path is passed.
 <DF>.to_pickle/excel(<path>)                   # Run `$ pip3 install "pandas[excel]" odfpy`.
 <DF>.to_sql('<table_name>', <connection>)      # Also `if_exists='fail/replace/append'`.
 ```
@@ -3435,10 +3444,10 @@ import pandas as pd, plotly.express as ex
 <div id="2a950764-39fc-416d-97fe-0a6226a3095f" class="plotly-graph-div" style="height:312px; width:914px;"></div>
 
 ```python
-covid = pd.read_csv('https://covid.ourworldindata.org/data/owid-covid-data.csv',
+covid = pd.read_csv('https://raw.githubusercontent.com/owid/covid-19-data/8dde8ca49b'
+                    '6e648c17dd420b2726ca0779402651/public/data/owid-covid-data.csv',
                     usecols=['iso_code', 'date', 'total_deaths', 'population'])
-continents = pd.read_csv('https://gist.githubusercontent.com/stevewithington/20a69c0b6d2ff'
-                         '846ea5d35e5fc47f26c/raw/country-and-continent-codes-list-csv.csv',
+continents = pd.read_csv('https://gto76.github.io/python-cheatsheet/web/continents.csv',
                          usecols=['Three_Letter_Country_Code', 'Continent_Name'])
 df = pd.merge(covid, continents, left_on='iso_code', right_on='Three_Letter_Country_Code')
 df = df.groupby(['Continent_Name', 'date']).sum().reset_index()

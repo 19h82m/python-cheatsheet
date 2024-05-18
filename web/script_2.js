@@ -20,8 +20,7 @@ const TOC_MOBILE =
   '                       <a href="#combinatorics">Combinatorics</a>, <a href="#datetime">Datetime</a>],\n' +
   '    <strong><span class="hljs-string">\'3. Syntax\'</span></strong>:      [<a href="#arguments">Args</a>, <a href="#inline">Inline</a>, <a href="#imports">Import</a>,\n' +
   '                       <a href="#decorator">Decorator</a>, <a href="#class">Class</a>,\n' +
-  '                       <a href="#ducktypes">Duck_Types</a>, <a href="#enum">Enum</a>,\n' +
-  '                       <a href="#exceptions">Exception</a>],\n' +
+  '                       <a href="#ducktypes">Duck_Types</a>, <a href="#enum">Enum</a>, <a href="#exceptions">Except</a>],\n' +
   '    <strong><span class="hljs-string">\'4. System\'</span></strong>:      [<a href="#exit">Exit</a>, <a href="#print">Print</a>, <a href="#input">Input</a>,\n' +
   '                       <a href="#commandlinearguments">Command_Line_Arguments</a>,\n' +
   '                       <a href="#open">Open</a>, <a href="#paths">Path</a>, <a href="#oscommands">OS_Commands</a>],\n' +
@@ -56,6 +55,7 @@ if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine
 
 var TOC_SCREEN_WIDTH_CUTOFF = 667
 var TOC_EM = '2em'
+var TOC_EM_DESKTOP = '1.327em'
 
 if (isMobile && window.screen.width < TOC_SCREEN_WIDTH_CUTOFF) {
     $(`code:contains(ToC)`).html(TOC_MOBILE).css("line-height", TOC_EM);
@@ -65,7 +65,7 @@ function updateToc() {
   if (isMobile && window.screen.width < TOC_SCREEN_WIDTH_CUTOFF) {
       $(`code:contains(ToC)`).html(TOC_MOBILE).css("line-height", TOC_EM);
   } else {
-      $(`code:contains(ToC)`).html(TOC).css("line-height", TOC_EM);
+      $(`code:contains(ToC)`).html(TOC).css("line-height", TOC_EM_DESKTOP);
   }
 }
 window.addEventListener("orientationchange", updateToc, false);
