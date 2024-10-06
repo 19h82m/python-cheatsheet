@@ -39,7 +39,7 @@ const TOC =
   '    <strong><span class="hljs-string">\'4. System\'</span></strong>:      [<a href="#exit">Exit</a>, <a href="#print">Print</a>, <a href="#input">Input</a>, <a href="#commandlinearguments">Command_Line_Arguments</a>, <a href="#open">Open</a>, <a href="#paths">Path</a>, <a href="#oscommands">OS_Commands</a>],\n' +
   '    <strong><span class="hljs-string">\'5. Data\'</span></strong>:        [<a href="#json">JSON</a>, <a href="#pickle">Pickle</a>, <a href="#csv">CSV</a>, <a href="#sqlite">SQLite</a>, <a href="#bytes">Bytes</a>, <a href="#struct">Struct</a>, <a href="#array">Array</a>, <a href="#memoryview">Memory_View</a>, <a href="#deque">Deque</a>],\n' +
   '    <strong><span class="hljs-string">\'6. Advanced\'</span></strong>:    [<a href="#threading">Threading</a>, <a href="#operator">Operator</a>, <a href="#matchstatement">Match_Stmt</a>, <a href="#logging">Logging</a>, <a href="#introspection">Introspection</a>, <a href="#coroutines">Coroutines</a>],\n' +
-  '    <strong><span class="hljs-string">\'7. Libraries\'</span></strong>:   [<a href="#progressbar">Progress_Bar</a>, <a href="#plot">Plots</a>, <a href="#table">Tables</a>, <a href="#curses">Curses</a>, <a href="#pysimplegui">GUIs</a>, <a href="#scraping">Scraping</a>, <a href="#web">Web</a>, <a href="#profiling">Profiling</a>],\n' +
+  '    <strong><span class="hljs-string">\'7. Libraries\'</span></strong>:   [<a href="#progressbar">Progress_Bar</a>, <a href="#plot">Plot</a>, <a href="#table">Table</a>, <a href="#consoleapp">Console_App</a>, <a href="#guiapp">GUI</a>, <a href="#scraping">Scraping</a>, <a href="#web">Web</a>, <a href="#profiling">Profile</a>],\n' +
   '    <strong><span class="hljs-string">\'8. Multimedia\'</span></strong>:  [<a href="#numpy">NumPy</a>, <a href="#image">Image</a>, <a href="#animation">Animation</a>, <a href="#audio">Audio</a>, <a href="#synthesizer">Synthesizer</a>, <a href="#pygame">Pygame</a>, <a href="#pandas">Pandas</a>, <a href="#plotly">Plotly</a>]\n' +
   '}\n' +
   '</code></pre>\n';
@@ -48,14 +48,14 @@ const BIN_HEX =
   '&lt;int&gt; = ±<span class="hljs-number">0b</span>&lt;bin&gt;                                  <span class="hljs-comment"># Or: ±0x&lt;hex&gt;</span>\n' +
   '&lt;int&gt; = int(<span class="hljs-string">\'±&lt;bin&gt;\'</span>, <span class="hljs-number">2</span>)                          <span class="hljs-comment"># Or: int(\'±&lt;hex&gt;\', 16)</span>\n' +
   '&lt;int&gt; = int(<span class="hljs-string">\'±0b&lt;bin&gt;\'</span>, <span class="hljs-number">0</span>)                        <span class="hljs-comment"># Or: int(\'±0x&lt;hex&gt;\', 0)</span>\n' +
-  '&lt;str&gt; = bin(&lt;int&gt;)                                <span class="hljs-comment"># Returns \'[-]0b&lt;bin&gt;\'.</span>\n';
+  '&lt;str&gt; = bin(&lt;int&gt;)                                <span class="hljs-comment"># Returns \'[-]0b&lt;bin&gt;\'. Also hex().</span>\n';
 
-const LRU_CACHE =
-  '<span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache\n' +
+const CACHE =
+  '<span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> cache\n' +
   '\n' +
-  '<span class="hljs-meta">@lru_cache(maxsize=None)</span>\n' +
+  '<span class="hljs-meta">@cache</span>\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fib</span><span class="hljs-params">(n)</span>:</span>\n' +
-  '    <span class="hljs-keyword">return</span> n <span class="hljs-keyword">if</span> n &lt; <span class="hljs-number">2</span> <span class="hljs-keyword">else</span> fib(n-<span class="hljs-number">2</span>) + fib(n-<span class="hljs-number">1</span>)\n';
+  '    <span class="hljs-keyword">return</span> n <span class="hljs-keyword">if</span> n &lt; <span class="hljs-number">2</span> <span class="hljs-keyword">else</span> fib(n-<span class="hljs-number">2</span>) + fib(n-<span class="hljs-number">1</span>)';
 
 const PARAMETRIZED_DECORATOR =
   '<span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> wraps\n' +
@@ -75,11 +75,11 @@ const PARAMETRIZED_DECORATOR =
   '    <span class="hljs-keyword">return</span> x + y\n';
 
 const REPR_USE_CASES =
-  'print/str/repr([&lt;el&gt;])\n' +
-  'print/str/repr({&lt;el&gt;: &lt;el&gt;})\n' +
-  '<span class="hljs-string">f\'<span class="hljs-subst">{&lt;el&gt;!r}</span>\'</span>\n' +
-  'Z = dataclasses.make_dataclass(<span class="hljs-string">\'Z\'</span>, [<span class="hljs-string">\'a\'</span>]); print/str/repr(Z(&lt;el&gt;))\n' +
-  '<span class="hljs-meta">&gt;&gt;&gt; </span>&lt;el&gt;\n';
+  'print/str/repr([&lt;obj&gt;])\n' +
+  'print/str/repr({&lt;obj&gt;: &lt;obj&gt;})\n' +
+  '<span class="hljs-string">f\'<span class="hljs-subst">{&lt;obj&gt;!r}</span>\'</span>\n' +
+  'Z = dataclasses.make_dataclass(<span class="hljs-string">\'Z\'</span>, [<span class="hljs-string">\'a\'</span>]); print/str/repr(Z(&lt;obj&gt;))\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>&lt;obj&gt;\n';
 
 const CONSTRUCTOR_OVERLOADING =
   '<span class="hljs-class"><span class="hljs-keyword">class</span> &lt;<span class="hljs-title">name</span>&gt;:</span>\n' +
@@ -122,7 +122,7 @@ const MATCH_EXAMPLE =
   '<span class="hljs-string">\'README.md is a readme file that belongs to user gto.\'</span>\n';
 
 const COROUTINES =
-  '<span class="hljs-keyword">import</span> asyncio, collections, curses, curses.textpad, enum, random, time\n' +
+  '<span class="hljs-keyword">import</span> asyncio, collections, curses, curses.textpad, enum, random\n' +
   '\n' +
   'P = collections.namedtuple(<span class="hljs-string">\'P\'</span>, <span class="hljs-string">\'x y\'</span>)    <span class="hljs-comment"># Position</span>\n' +
   'D = enum.Enum(<span class="hljs-string">\'D\'</span>, <span class="hljs-string">\'n e s w\'</span>)             <span class="hljs-comment"># Direction</span>\n' +
@@ -138,7 +138,7 @@ const COROUTINES =
   '    state = {<span class="hljs-string">\'*\'</span>: P(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>), **{id_: P(W//<span class="hljs-number">2</span>, H//<span class="hljs-number">2</span>) <span class="hljs-keyword">for</span> id_ <span class="hljs-keyword">in</span> range(<span class="hljs-number">10</span>)}}\n' +
   '    ai    = [random_controller(id_, moves) <span class="hljs-keyword">for</span> id_ <span class="hljs-keyword">in</span> range(<span class="hljs-number">10</span>)]\n' +
   '    mvc   = [human_controller(screen, moves), model(moves, state), view(state, screen)]\n' +
-  '    tasks = [asyncio.create_task(cor) <span class="hljs-keyword">for</span> cor <span class="hljs-keyword">in</span> ai + mvc]\n' +
+  '    tasks = [asyncio.create_task(coro) <span class="hljs-keyword">for</span> coro <span class="hljs-keyword">in</span> ai + mvc]\n' +
   '    <span class="hljs-keyword">await</span> asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)\n' +
   '\n' +
   '<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">random_controller</span><span class="hljs-params">(id_, moves)</span>:</span>\n' +
@@ -208,19 +208,32 @@ const PROGRESS_BAR =
   'Processing: 100%|████████████████████| 3/3 [00:03&lt;00:00,  1.00s/it]\n';
 
 const LOGGING_EXAMPLE =
-  '<span class="hljs-meta">&gt;&gt;&gt; </span>logger = logging.getLogger(<span class="hljs-string">\'my_module\'</span>)\n' +
-  '<span class="hljs-meta">&gt;&gt;&gt; </span>handler = logging.FileHandler(<span class="hljs-string">\'test.log\'</span>, encoding=<span class="hljs-string">\'utf-8\'</span>)\n' +
-  '<span class="hljs-meta">&gt;&gt;&gt; </span>handler.setFormatter(logging.Formatter(<span class="hljs-string">\'%(asctime)s %(levelname)s:%(name)s:%(message)s\'</span>))\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>logger = log.getLogger(<span class="hljs-string">\'my_module\'</span>)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>handler = log.FileHandler(<span class="hljs-string">\'test.log\'</span>, encoding=<span class="hljs-string">\'utf-8\'</span>)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>handler.setFormatter(log.Formatter(<span class="hljs-string">\'%(asctime)s %(levelname)s:%(name)s:%(message)s\'</span>))\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>logger.addHandler(handler)\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>logger.setLevel(<span class="hljs-string">\'DEBUG\'</span>)\n' +
-  '<span class="hljs-meta">&gt;&gt;&gt; </span>logging.basicConfig()\n' +
-  '<span class="hljs-meta">&gt;&gt;&gt; </span>logging.root.handlers[<span class="hljs-number">0</span>].setLevel(<span class="hljs-string">\'WARNING\'</span>)\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>log.basicConfig()\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>log.root.handlers[<span class="hljs-number">0</span>].setLevel(<span class="hljs-string">\'WARNING\'</span>)\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>logger.critical(<span class="hljs-string">\'Running out of disk space.\'</span>)\n' +
   'CRITICAL:my_module:Running out of disk space.\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>print(open(<span class="hljs-string">\'test.log\'</span>).read())\n' +
   '2023-02-07 23:21:01,430 CRITICAL:my_module:Running out of disk space.\n';
 
-const AUDIO =
+const AUDIO_1 =
+  '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">write_to_wav_file</span><span class="hljs-params">(filename, samples_f, p=<span class="hljs-keyword">None</span>, nchannels=<span class="hljs-number">1</span>, sampwidth=<span class="hljs-number">2</span>, framerate=<span class="hljs-number">44100</span>)</span>:</span>\n' +
+  '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_bytes</span><span class="hljs-params">(a_float)</span>:</span>\n' +
+  '        a_float = max(<span class="hljs-number">-1</span>, min(<span class="hljs-number">1</span> - <span class="hljs-number">2e-16</span>, a_float))\n' +
+  '        a_float += p.sampwidth == <span class="hljs-number">1</span>\n' +
+  '        a_float *= pow(<span class="hljs-number">2</span>, p.sampwidth * <span class="hljs-number">8</span> - <span class="hljs-number">1</span>)\n' +
+  '        <span class="hljs-keyword">return</span> int(a_float).to_bytes(p.sampwidth, <span class="hljs-string">\'little\'</span>, signed=(p.sampwidth != <span class="hljs-number">1</span>))\n' +
+  '    <span class="hljs-keyword">if</span> p <span class="hljs-keyword">is</span> <span class="hljs-keyword">None</span>:\n' +
+  '        p = wave._wave_params(nchannels, sampwidth, framerate, <span class="hljs-number">0</span>, <span class="hljs-string">\'NONE\'</span>, <span class="hljs-string">\'not compressed\'</span>)\n' +
+  '    <span class="hljs-keyword">with</span> wave.open(filename, <span class="hljs-string">\'wb\'</span>) <span class="hljs-keyword">as</span> file:\n' +
+  '        file.setparams(p)\n' +
+  '        file.writeframes(<span class="hljs-string">b\'\'</span>.join(get_bytes(f) <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> samples_f))\n';
+
+const AUDIO_2 =
   '<span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> pi, sin\n' +
   'samples_f = (sin(i * <span class="hljs-number">2</span> * pi * <span class="hljs-number">440</span> / <span class="hljs-number">44100</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">100_000</span>))\n' +
   'write_to_wav_file(<span class="hljs-string">\'test.wav\'</span>, samples_f)\n';
@@ -261,7 +274,7 @@ const MARIO =
   '        pressed -= {keys.get(e.key) <span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> pg.event.get(pg.KEYUP)}\n' +
   '        update_speed(mario, tiles, pressed)\n' +
   '        update_position(mario, tiles)\n' +
-  '        draw(screen, images, mario, tiles, pressed)\n' +
+  '        draw(screen, images, mario, tiles)\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_speed</span><span class="hljs-params">(mario, tiles, pressed)</span>:</span>\n' +
   '    x, y = mario.spd\n' +
@@ -275,7 +288,8 @@ const MARIO =
   '    n_steps = max(abs(s) <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> mario.spd)\n' +
   '    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> range(n_steps):\n' +
   '        mario.spd = stop_on_collision(mario.spd, get_boundaries(mario.rect, tiles))\n' +
-  '        mario.rect.topleft = x, y = x + (mario.spd.x / n_steps), y + (mario.spd.y / n_steps)\n' +
+  '        x, y = x + (mario.spd.x / n_steps), y + (mario.spd.y / n_steps)\n' +
+  '        mario.rect.topleft = x, y\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_boundaries</span><span class="hljs-params">(rect, tiles)</span>:</span>\n' +
   '    deltas = {D.n: P(<span class="hljs-number">0</span>, <span class="hljs-number">-1</span>), D.e: P(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>), D.s: P(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>), D.w: P(<span class="hljs-number">-1</span>, <span class="hljs-number">0</span>)}\n' +
@@ -285,16 +299,15 @@ const MARIO =
   '    <span class="hljs-keyword">return</span> P(x=<span class="hljs-number">0</span> <span class="hljs-keyword">if</span> (D.w <span class="hljs-keyword">in</span> bounds <span class="hljs-keyword">and</span> spd.x &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">or</span> (D.e <span class="hljs-keyword">in</span> bounds <span class="hljs-keyword">and</span> spd.x &gt; <span class="hljs-number">0</span>) <span class="hljs-keyword">else</span> spd.x,\n' +
   '             y=<span class="hljs-number">0</span> <span class="hljs-keyword">if</span> (D.n <span class="hljs-keyword">in</span> bounds <span class="hljs-keyword">and</span> spd.y &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">or</span> (D.s <span class="hljs-keyword">in</span> bounds <span class="hljs-keyword">and</span> spd.y &gt; <span class="hljs-number">0</span>) <span class="hljs-keyword">else</span> spd.y)\n' +
   '\n' +
-  '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">draw</span><span class="hljs-params">(screen, images, mario, tiles, pressed)</span>:</span>\n' +
-  '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_marios_image_index</span><span class="hljs-params">()</span>:</span>\n' +
-  '        <span class="hljs-keyword">if</span> D.s <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> get_boundaries(mario.rect, tiles):\n' +
-  '            <span class="hljs-keyword">return</span> <span class="hljs-number">4</span>\n' +
-  '        <span class="hljs-keyword">return</span> next(mario.frame_cycle) <span class="hljs-keyword">if</span> {D.w, D.e} &amp; pressed <span class="hljs-keyword">else</span> <span class="hljs-number">6</span>\n' +
+  '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">draw</span><span class="hljs-params">(screen, images, mario, tiles)</span>:</span>\n' +
   '    screen.fill((<span class="hljs-number">85</span>, <span class="hljs-number">168</span>, <span class="hljs-number">255</span>))\n' +
-  '    mario.facing_left = (D.w <span class="hljs-keyword">in</span> pressed) <span class="hljs-keyword">if</span> {D.w, D.e} &amp; pressed <span class="hljs-keyword">else</span> mario.facing_left\n' +
-  '    screen.blit(images[get_marios_image_index() + mario.facing_left * <span class="hljs-number">9</span>], mario.rect)\n' +
+  '    mario.facing_left = mario.spd.x &lt; <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> mario.spd.x <span class="hljs-keyword">else</span> mario.facing_left\n' +
+  '    is_airborne = D.s <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> get_boundaries(mario.rect, tiles)\n' +
+  '    image_index = <span class="hljs-number">4</span> <span class="hljs-keyword">if</span> is_airborne <span class="hljs-keyword">else</span> (next(mario.frame_cycle) <span class="hljs-keyword">if</span> mario.spd.x <span class="hljs-keyword">else</span> <span class="hljs-number">6</span>)\n' +
+  '    screen.blit(images[image_index + (mario.facing_left * <span class="hljs-number">9</span>)], mario.rect)\n' +
   '    <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> tiles:\n' +
-  '        screen.blit(images[<span class="hljs-number">18</span> <span class="hljs-keyword">if</span> t.x <span class="hljs-keyword">in</span> [<span class="hljs-number">0</span>, (W-<span class="hljs-number">1</span>)*<span class="hljs-number">16</span>] <span class="hljs-keyword">or</span> t.y <span class="hljs-keyword">in</span> [<span class="hljs-number">0</span>, (H-<span class="hljs-number">1</span>)*<span class="hljs-number">16</span>] <span class="hljs-keyword">else</span> <span class="hljs-number">19</span>], t)\n' +
+  '        is_border = t.x <span class="hljs-keyword">in</span> [<span class="hljs-number">0</span>, (W-<span class="hljs-number">1</span>)*<span class="hljs-number">16</span>] <span class="hljs-keyword">or</span> t.y <span class="hljs-keyword">in</span> [<span class="hljs-number">0</span>, (H-<span class="hljs-number">1</span>)*<span class="hljs-number">16</span>]\n' +
+  '        screen.blit(images[<span class="hljs-number">18</span> <span class="hljs-keyword">if</span> is_border <span class="hljs-keyword">else</span> <span class="hljs-number">19</span>], t)\n' +
   '    pg.display.flip()\n' +
   '\n' +
   '<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">\'__main__\'</span>:\n' +
@@ -309,8 +322,8 @@ const GROUPBY =
   'c  <span class="hljs-number">7</span>  <span class="hljs-number">8</span>  <span class="hljs-number">6</span>';
 
 const CYTHON_1 =
-  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt; &lt;var_name&gt; = &lt;el&gt;\n' +
-  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt;[n_elements] &lt;var_name&gt; = [&lt;el&gt;, &lt;el&gt;, ...]\n' +
+  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt; &lt;var_name&gt; = &lt;obj&gt;\n' +
+  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt;[n_elements] &lt;var_name&gt; = [&lt;el_1&gt;, &lt;el_2&gt;, ...]\n' +
   '<span class="hljs-keyword">cdef</span> &lt;ctype/void&gt; &lt;func_name&gt;(&lt;ctype&gt; &lt;arg_name&gt;): ...\n';
 
 const CYTHON_2 =
@@ -441,7 +454,7 @@ const DIAGRAM_7_B =
   "      ├── LookupError             <span class='hljs-comment'># Base class for errors when a collection can't find an item.</span>\n" +
   "      │    ├── IndexError         <span class='hljs-comment'># Raised when a sequence index is out of range.</span>\n" +
   "      │    └── KeyError           <span class='hljs-comment'># Raised when a dictionary key or set element is missing.</span>\n" +
-  "      ├── MemoryError             <span class='hljs-comment'># Out of memory. May be too late to start deleting objects.</span>\n" +
+  "      ├── MemoryError             <span class='hljs-comment'># Out of memory. May be too late to start deleting variables.</span>\n" +
   "      ├── NameError               <span class='hljs-comment'># Raised when nonexistent name (variable/func/class) is used.</span>\n" +
   "      │    └── UnboundLocalError  <span class='hljs-comment'># Raised when local name is used before it's being defined.</span>\n" +
   "      ├── OSError                 <span class='hljs-comment'># Errors such as FileExistsError/TimeoutError (see #Open).</span>\n" +
@@ -825,9 +838,9 @@ function fixClasses() {
 
 function fixHighlights() {
   $(`code:contains(<int> = ±0b<bin>)`).html(BIN_HEX);
-  $(`code:contains(@lru_cache(maxsize=None))`).html(LRU_CACHE);
+  $(`code:contains(@cache)`).html(CACHE);
   $(`code:contains(@debug(print_result=True))`).html(PARAMETRIZED_DECORATOR);
-  $(`code:contains(print/str/repr([<el>]))`).html(REPR_USE_CASES);
+  $(`code:contains(print/str/repr([<obj>]))`).html(REPR_USE_CASES);
   $(`code:contains((self, a=None):)`).html(CONSTRUCTOR_OVERLOADING);
   $(`code:contains(make_dataclass(\'<class_name>\')`).html(DATACLASS);
   $(`code:contains(shutil.copy)`).html(SHUTIL_COPY);
@@ -838,11 +851,12 @@ function fixHighlights() {
   $(`code:contains(import asyncio, collections, curses, curses.textpad, enum, random)`).html(COROUTINES);
   $(`code:contains(import curses, os)`).html(CURSES);
   $(`code:contains(pip3 install tqdm)`).html(PROGRESS_BAR);
-  $(`code:contains(>>> logging.basicConfig()`).html(LOGGING_EXAMPLE);
-  $(`code:contains(samples_f = (sin(i *)`).html(AUDIO);
+  $(`code:contains(>>> log.basicConfig()`).html(LOGGING_EXAMPLE);
+  $(`code:contains(a_float = max()`).html(AUDIO_1);
+  $(`code:contains(samples_f = (sin(i *)`).html(AUDIO_2);
   $(`code:contains(collections, dataclasses, enum, io, itertools)`).html(MARIO);
   $(`code:contains(>>> gb = df.groupby)`).html(GROUPBY);
-  $(`code:contains(cdef <ctype> <var_name> = <el>)`).html(CYTHON_1);
+  $(`code:contains(cdef <ctype> <var_name> = <obj>)`).html(CYTHON_1);
   $(`code:contains(cdef class <class_name>:)`).html(CYTHON_2);
   $(`code:contains(cdef enum <enum_name>: <member_name>, <member_name>, ...)`).html(CYTHON_3);
   $(`ul:contains(Only available in)`).html(INDEX);
